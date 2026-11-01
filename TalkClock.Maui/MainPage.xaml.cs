@@ -41,10 +41,15 @@ public partial class MainPage : ContentPage
         ThemePicker.SelectedIndex = Math.Clamp(Preferences.Get("clokar_theme", 0), 0, 2);
         AccentPicker.SelectedIndex = Math.Clamp(Preferences.Get("clokar_accent", 0), 0, 5);
         SnoozePicker.SelectedIndex = Math.Clamp(Preferences.Get("alarm_snooze_minutes", 5) switch { 10 => 1, 15 => 2, 20 => 3, _ => 0 }, 0, 3);
+        TextScalePicker.SelectedIndex = Math.Clamp(Preferences.Get("accessibility_text_scale", 0), 0, 2);
+        HighContrastSwitch.IsToggled = Preferences.Get("accessibility_high_contrast", false);
+        ReduceMotionSwitch.IsToggled = Preferences.Get("accessibility_reduce_motion", false);
+        HapticsSwitch.IsToggled = Preferences.Get("accessibility_haptics", true);
         ApplyKeepAwake();
         ApplyGlass();
         ApplyTheme();
         ApplyAccent();
+        ApplyAccessibility();
         ShowTab(0);
         _uiTimer = Dispatcher.CreateTimer();
         _uiTimer.Interval = TimeSpan.FromMilliseconds(100);
@@ -129,7 +134,7 @@ public partial class MainPage : ContentPage
             var time = new Label { Text = "--:--", TextColor = Colors.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.Center };
             row.Add(time, 1);
             _worldTimeLabels[id] = time;
-            var remove = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(10, 2), VerticalOptions = LayoutOptions.Center };
+            var remove = new Button { Text = "×", AutomationProperties = { Name = $"Remove world clock {id}" }, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(10, 2), VerticalOptions = LayoutOptions.Center };
             remove.Clicked += (_, _) =>
             {
                 _worldZones.Remove(id);
@@ -256,6 +261,59 @@ public partial class MainPage : ContentPage
             if (child is Button button && button.Text.Contains("Clock", StringComparison.Ordinal))
                 button.TextColor = color;
     }
+    void OnTextScaleChanged(object sender, EventArgs e)
+    {
+        if (TextScalePicker.SelectedIndex < 0) return;
+        Preferences.Set("accessibility_text_scale", TextScalePicker.SelectedIndex);
+        ApplyAccessibility();
+    }
+    void OnHighContrastToggled(object sender, ToggledEventArgs e)
+    {
+        Preferences.Set("accessibility_high_contrast", e.Value);
+        ApplyAccessibility();
+    }
+    void OnReduceMotionToggled(object sender, ToggledEventArgs e)
+        => Preferences.Set("accessibility_reduce_motion", e.Value);
+    void OnHapticsToggled(object sender, ToggledEventArgs e)
+        => Preferences.Set("accessibility_haptics", e.Value);
+
+    void ApplyAccessibility()
+    {
+        var scale = Preferences.Get("accessibility_text_scale", 0) switch { 1 => 1.18, 2 => 1.35, _ => 1.0 };
+        ClockLabel.FontSize = 48 * scale;
+        DateLabel.FontSize = 13 * scale;
+        AlarmStatus.FontSize = 12 * scale;
+        TimerStatus.FontSize = 38 * scale;
+        StopwatchLabel.FontSize = 36 * scale;
+        CreateAlarmButton.FontSize = 14 * scale;
+        TimerButton.FontSize = 14 * scale;
+        StopwatchButton.FontSize = 14 * scale;
+        foreach (var child in BottomNav.Children)
+            if (child is Button button) button.FontSize = 10 * scale;
+
+        var contrast = Preferences.Get("accessibility_high_contrast", false);
+        var primary = Color.FromArgb(contrast ? "#FFFFFF" : "#F2F7FC");
+        var secondary = Color.FromArgb(contrast ? "#E0ECF7" : "#B5C9D9");
+        var outline = Color.FromArgb(contrast ? "#91B9D8" : "#2B4359");
+        ClockLabel.TextColor = contrast ? Colors.White : Color.FromArgb(Preferences.Get("clokar_accent", 0) switch
+        {
+            1 => "#B9A2FF", 2 => "#8DE6C0", 3 => "#FF9DB5",
+            4 => "#FFC978", 5 => "#9BE7F2", _ => "#A7DFFF"
+        });
+        DateLabel.TextColor = secondary;
+        TimerStatus.TextColor = primary;
+        StopwatchLabel.TextColor = primary;
+        AlarmStatus.TextColor = secondary;
+        foreach (var border in new[] { WorldClockSection, AlarmSection, TimerSection, StopwatchSection, SettingsSection })
+            border.Stroke = contrast ? outline : Color.FromArgb(Preferences.Get("liquid_glass", true) ? "#54758F" : "#2B4359");
+    }
+
+    void PerformTouchFeedback()
+    {
+        if (!Preferences.Get("accessibility_haptics", true)) return;
+        try { HapticFeedback.Default.Perform(HapticFeedbackType.Click); } catch { }
+    }
+
     void OnKeepAwakeToggled(object sender, ToggledEventArgs e)
     {
         Preferences.Set("keep_awake", e.Value);
@@ -286,6 +344,7 @@ public partial class MainPage : ContentPage
 
     async void OnSetAlarmClicked(object sender, EventArgs e)
     {
+        PerformTouchFeedback();
         Preferences.Set("alarm_vibrate_default", AlarmVibrateSwitch.IsToggled);
         Preferences.Set("alarm_gradual_default", AlarmGradualSwitch.IsToggled);
         DefaultVibrateSwitch.IsToggled = AlarmVibrateSwitch.IsToggled;
@@ -328,7 +387,7 @@ public partial class MainPage : ContentPage
             text.Children.Add(new Label { Text = alarm.Time, FontSize = 24, TextColor = Colors.White, FontAttributes = FontAttributes.Bold });
             text.Children.Add(new Label { Text = $"{alarm.Label} • {alarm.RepeatText} • {(alarm.Vibrate ? "Vibration" : "Silent")} • {(alarm.GradualVolume ? "Soft start" : "Full volume")}", FontSize = 11, TextColor = Color.FromArgb("#91A8C0") });
             row.Add(text, 0);
-            var enabled = new Switch { IsToggled = alarm.Enabled, OnColor = Color.FromArgb("#A7DFFF"), VerticalOptions = LayoutOptions.Center };
+            var enabled = new Switch { IsToggled = alarm.Enabled, AutomationProperties = { Name = $"Enable alarm {alarm.Label}" }, OnColor = Color.FromArgb("#A7DFFF"), VerticalOptions = LayoutOptions.Center };
             enabled.Toggled += (_, args) =>
             {
                 alarm.Enabled = args.Value;
@@ -338,7 +397,7 @@ public partial class MainPage : ContentPage
                 SaveAlarms();
             };
             row.Add(enabled, 1);
-            var delete = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(12, 4), VerticalOptions = LayoutOptions.Center };
+            var delete = new Button { Text = "×", AutomationProperties = { Name = $"Delete alarm {alarm.Label}" }, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(12, 4), VerticalOptions = LayoutOptions.Center };
             delete.Clicked += (_, _) =>
             {
 #if ANDROID
@@ -385,6 +444,7 @@ public partial class MainPage : ContentPage
 
     void OnTimerClicked(object sender, EventArgs e)
     {
+        PerformTouchFeedback();
         if (_timerRunning)
         {
             _timerRemaining = _timerEnd - DateTime.Now;
@@ -415,16 +475,19 @@ public partial class MainPage : ContentPage
 
     void OnStopwatchClicked(object sender, EventArgs e)
     {
+        PerformTouchFeedback();
         if (_stopwatch.IsRunning) { _stopwatch.Stop(); StopwatchButton.Text = "Resume"; }
         else { _stopwatch.Start(); StopwatchButton.Text = "Pause"; }
     }
     void OnStopwatchResetClicked(object sender, EventArgs e)
     {
+        PerformTouchFeedback();
         _stopwatch.Reset(); _laps.Clear(); SaveLaps(); RenderLaps();
         StopwatchLabel.Text = "00:00:00.00"; StopwatchButton.Text = "Start";
     }
     void OnLapClicked(object sender, EventArgs e)
     {
+        PerformTouchFeedback();
         if (!_stopwatch.IsRunning) return;
         _laps.Add(_stopwatch.Elapsed); SaveLaps(); RenderLaps();
     }
