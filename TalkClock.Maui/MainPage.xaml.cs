@@ -5,6 +5,9 @@ public partial class MainPage : ContentPage
 {
     const string AlarmsKey = "alarms_json";
     const string LapsKey = "stopwatch_laps";
+    const string WorldClocksKey = "world_clock_zones";
+    readonly List<string> _worldZones = [];
+    readonly Dictionary<string, Label> _worldTimeLabels = new(StringComparer.OrdinalIgnoreCase);
     readonly Stopwatch _stopwatch = new();
     readonly List<TimeSpan> _laps = [];
     List<AlarmItem> _alarms = [];
@@ -19,6 +22,8 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         _alarms = LoadAlarms();
         LoadLaps();
+        LoadWorldClocks();
+        RenderWorldClocks();
         RestoreTimer();
         RenderAlarms();
         RenderLaps();
@@ -38,6 +43,7 @@ public partial class MainPage : ContentPage
                 _lastClockSecond = now.Second;
                 ClockLabel.Text = now.ToString(Preferences.Get("use_24_hour", true) ? "HH:mm:ss" : "h:mm:ss tt");
                 DateLabel.Text = now.ToString("dddd, MMMM d");
+                UpdateWorldClockLabels(now);
             }
             if (_stopwatch.IsRunning) StopwatchLabel.Text = _stopwatch.Elapsed.ToString(@"hh\:mm\:ss\.ff");
             if (_timerRunning)
@@ -59,6 +65,77 @@ public partial class MainPage : ContentPage
             }
         };
         _uiTimer.Start();
+    }
+
+    void LoadWorldClocks()
+    {
+        try
+        {
+            _worldZones.AddRange(JsonSerializer.Deserialize<List<string>>(Preferences.Get(WorldClocksKey, "[\"Europe/London\"]")) ?? []);
+        }
+        catch { _worldZones.Add("Europe/London"); }
+        for (var i = _worldZones.Count - 1; i >= 0; i--)
+            if (!TryGetTimeZone(_worldZones[i], out _)) _worldZones.RemoveAt(i);
+    }
+
+    static bool TryGetTimeZone(string id, out TimeZoneInfo zone)
+    {
+        try { zone = TimeZoneInfo.FindSystemTimeZoneById(id); return true; }
+        catch { zone = TimeZoneInfo.Utc; return false; }
+    }
+
+    void SaveWorldClocks() => Preferences.Set(WorldClocksKey, JsonSerializer.Serialize(_worldZones));
+
+    async void OnAddWorldClockClicked(object sender, EventArgs e)
+    {
+        var id = WorldZoneEntry.Text?.Trim() ?? "";
+        if (!TryGetTimeZone(id, out _))
+        {
+            await DisplayAlert("Unknown time zone", "Enter a valid IANA time-zone ID, for example Asia/Tokyo.", "OK");
+            return;
+        }
+        if (_worldZones.Contains(id, StringComparer.OrdinalIgnoreCase))
+        {
+            await DisplayAlert("Already added", "That time zone is already on your list.", "OK");
+            return;
+        }
+        _worldZones.Add(id);
+        SaveWorldClocks();
+        RenderWorldClocks();
+        WorldZoneEntry.Text = "";
+    }
+
+    void RenderWorldClocks()
+    {
+        WorldClockList.Clear();
+        _worldTimeLabels.Clear();
+        foreach (var id in _worldZones)
+        {
+            var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, Padding = new Thickness(8, 6) };
+            row.Add(new Label { Text = id, TextColor = Color.FromArgb("#C9DCEB"), FontSize = 12, VerticalOptions = LayoutOptions.Center }, 0);
+            var time = new Label { Text = "--:--", TextColor = Colors.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.Center };
+            row.Add(time, 1);
+            _worldTimeLabels[id] = time;
+            var remove = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(10, 2), VerticalOptions = LayoutOptions.Center };
+            remove.Clicked += (_, _) =>
+            {
+                _worldZones.Remove(id);
+                SaveWorldClocks();
+                RenderWorldClocks();
+            };
+            row.Add(remove, 2);
+            WorldClockList.Children.Add(new Border { Stroke = Color.FromArgb("#2B4359"), StrokeShape = new RoundRectangle(14), Padding = 2, Content = row });
+        }
+        if (_worldZones.Count == 0)
+            WorldClockList.Children.Add(new Label { Text = "Add a city by entering its time-zone ID above.", TextColor = Color.FromArgb("#829AAF"), FontSize = 12 });
+        UpdateWorldClockLabels(DateTime.Now);
+    }
+
+    void UpdateWorldClockLabels(DateTime localNow)
+    {
+        foreach (var id in _worldZones)
+            if (_worldTimeLabels.TryGetValue(id, out var label) && TryGetTimeZone(id, out var zone))
+                label.Text = TimeZoneInfo.ConvertTime(localNow, zone).ToString(Preferences.Get("use_24_hour", true) ? "HH:mm:ss" : "h:mm:ss tt");
     }
 
     void ShowTab(int tab)
