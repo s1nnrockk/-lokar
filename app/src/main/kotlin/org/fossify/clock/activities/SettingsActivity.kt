@@ -121,9 +121,11 @@ class SettingsActivity : SimpleActivity() {
 
     private fun applyGlassToSettings() {
         val glassEnabled = config.liquidGlass
-        binding.settingsToolbar.setBackgroundResource(
-            if (glassEnabled) R.drawable.glass_toolbar_background else org.fossify.commons.R.color.color_primary
-        )
+        if (glassEnabled) {
+            binding.settingsToolbar.setBackgroundResource(R.drawable.glass_toolbar_background)
+        } else {
+            binding.settingsToolbar.setBackgroundColor(getColor(R.color.color_primary))
+        }
         val holder = binding.settingsHolder
         for (index in 0 until holder.childCount) {
             val child = holder.getChildAt(index)
