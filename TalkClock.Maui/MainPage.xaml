@@ -74,6 +74,15 @@
             <VerticalStackLayout x:Name="LapList" Spacing="6"/>
           </VerticalStackLayout>
         </Border>
+        <Border x:Name="SettingsSection" IsVisible="False" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="18">
+          <VerticalStackLayout Spacing="16">
+            <Label Text="Settings" TextColor="White" FontSize="21" FontAttributes="Bold"/>
+            <Grid ColumnDefinitions="*,Auto"><Label Text="Liquid Glass" TextColor="#DCEAF5" VerticalOptions="Center"/><Switch x:Name="GlassSwitch" Grid.Column="1" Toggled="OnGlassToggled" OnColor="#A7DFFF"/></Grid>
+            <Grid ColumnDefinitions="*,Auto"><Label Text="24-hour clock" TextColor="#DCEAF5" VerticalOptions="Center"/><Switch x:Name="HourFormatSwitch" Grid.Column="1" Toggled="OnHourFormatToggled" OnColor="#A7DFFF"/></Grid>
+            <Grid ColumnDefinitions="*,Auto"><Label Text="Keep screen awake" TextColor="#DCEAF5" VerticalOptions="Center"/><Switch x:Name="KeepAwakeSwitch" Grid.Column="1" Toggled="OnKeepAwakeToggled" OnColor="#A7DFFF"/></Grid>
+            <Label Text="Changes are saved automatically." TextColor="#829AAF" FontSize="12"/>
+          </VerticalStackLayout>
+        </Border>
         <Label Text="Private by design • No ads • No account" TextColor="#526A7E" FontSize="11" HorizontalOptions="Center"/>
       </VerticalStackLayout>
     </ScrollView>
@@ -82,7 +91,7 @@
         <Button Text="◷ Clock" Clicked="OnClockTabClicked" BackgroundColor="#1B3044" TextColor="#A7DFFF" CornerRadius="16" FontSize="11"/>
         <Button Grid.Column="1" Text="◉ Alarm" Clicked="OnAlarmTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
         <Button Grid.Column="2" Text="⌛ Timer" Clicked="OnTimerTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
-        <Button Grid.Column="3" Text="◴ Stopwatch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
+        <Button Grid.Column="3" Text="◴ Watch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="10"/>\n        <Button Grid.Column="4" Text="⚙ Settings" Clicked="OnSettingsTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="10"/>
       </Grid>
     </Border>
   </Grid>
