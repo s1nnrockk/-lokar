@@ -27,6 +27,20 @@
             <Label x:Name="DateLabel" Text="Monday, January 1" TextColor="#A3BED1" HorizontalOptions="Center"/>
           </VerticalStackLayout>
         </Border>
+        <Border x:Name="WorldClockSection" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="18">
+          <VerticalStackLayout Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+              <Label Text="World clocks" TextColor="White" FontSize="21" FontAttributes="Bold"/>
+              <Label Grid.Column="1" Text="🌐" FontSize="20"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <Entry x:Name="WorldZoneEntry" Placeholder="Time zone (e.g. Europe/Paris)" Text="Europe/London" TextColor="White" PlaceholderColor="#829AAF"/>
+              <Button Grid.Column="1" Text="＋ Add" Clicked="OnAddWorldClockClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="14"/>
+            </Grid>
+            <Label Text="Use an IANA time-zone ID, such as Asia/Tokyo or America/New_York." TextColor="#829AAF" FontSize="11"/>
+            <VerticalStackLayout x:Name="WorldClockList" Spacing="8"/>
+          </VerticalStackLayout>
+        </Border>
         <Border x:Name="AlarmSection" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="18">
           <VerticalStackLayout Spacing="12">
             <Grid ColumnDefinitions="*,Auto">
