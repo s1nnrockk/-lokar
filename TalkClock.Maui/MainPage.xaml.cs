@@ -230,8 +230,8 @@ public partial class MainPage : ContentPage
         var page = theme switch { 1 => "#050812", 2 => "#101114", _ => "#070D18" };
         BackgroundColor = Color.FromArgb(page);
         var panel = theme switch { 1 => "#0D1422", 2 => "#1A1B20", _ => "#101D2B" };
-        foreach (var border in new[] { WorldClockSection, AlarmSection, TimerSection, StopwatchSection, SettingsSection })
-            border.Background = new SolidColorBrush(Color.FromArgb(panel));
+        _ = panel;
+        ApplyGlass();
     }
     void ApplyAccent()
     {
@@ -262,7 +262,12 @@ public partial class MainPage : ContentPage
         foreach (var border in new[] { WorldClockSection, AlarmSection, TimerSection, StopwatchSection, SettingsSection })
         {
             border.Stroke = glass ? Color.FromArgb("#54758F") : Color.FromArgb("#2B4359");
-            if (glass) border.Background = new LinearGradientBrush(new GradientStopCollection { new GradientStop(Color.FromArgb("#1B3044"), 0), new GradientStop(Color.FromArgb("#0D1927"), 1) }, new Point(0,0), new Point(1,1));
+            var theme = Preferences.Get("clokar_theme", 0);
+            var top = theme switch { 1 => "#18243A", 2 => "#292A30", _ => "#1B3044" };
+            var bottom = theme switch { 1 => "#0D1422", 2 => "#17181D", _ => "#0D1927" };
+            border.Background = glass
+                ? new LinearGradientBrush(new GradientStopCollection { new GradientStop(Color.FromArgb(top), 0), new GradientStop(Color.FromArgb(bottom), 1) }, new Point(0,0), new Point(1,1))
+                : new SolidColorBrush(Color.FromArgb(theme switch { 1 => "#0D1422", 2 => "#1A1B20", _ => "#101D2B" }));
         }
     }
 
