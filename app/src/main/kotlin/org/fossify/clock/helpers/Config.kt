@@ -18,6 +18,10 @@ class Config(context: Context) : BaseConfig(context) {
         fun newInstance(context: Context) = Config(context)
     }
 
+    var liquidGlass: Boolean
+        get() = prefs.getBoolean(LIQUID_GLASS, true)
+        set(enabled) = prefs.edit { putBoolean(LIQUID_GLASS, enabled) }
+
     var selectedTimeZones: Set<String>
         get() = prefs.getStringSet(SELECTED_TIME_ZONES, HashSet())!!
         set(selectedTimeZones) = prefs.edit { putStringSet(SELECTED_TIME_ZONES, selectedTimeZones) }
