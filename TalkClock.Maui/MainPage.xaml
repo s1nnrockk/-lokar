@@ -85,7 +85,7 @@
               <VerticalStackLayout Grid.Column="5"><CheckBox x:Name="Day5" Color="#9BDFFF"/><Label Text="Fr" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
               <VerticalStackLayout Grid.Column="6"><CheckBox x:Name="Day6" Color="#9BDFFF"/><Label Text="Sa" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
             </Grid>
-            <Button Text="＋  Create alarm" Clicked="OnSetAlarmClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16" FontAttributes="Bold" HeightRequest="50"/>
+            <Button x:Name="CreateAlarmButton" Text="＋  Create alarm" Clicked="OnSetAlarmClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16" FontAttributes="Bold" HeightRequest="50"/>
             <Label x:Name="AlarmStatus" Text="No alarms scheduled" TextColor="#829AAF" FontSize="12"/>
             <VerticalStackLayout x:Name="AlarmList" Spacing="8"/>
           </VerticalStackLayout>
