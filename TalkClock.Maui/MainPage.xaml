@@ -7,7 +7,7 @@
       <VerticalStackLayout Padding="20,24,20,22" Spacing="16">
         <Grid ColumnDefinitions="*,Auto">
           <VerticalStackLayout Spacing="3">
-            <Label Text="TALKCLOCK" TextColor="#A7DFFF" FontSize="11" FontAttributes="Bold" />
+            <Label Text="CLOKAR" TextColor="#A7DFFF" FontSize="11" FontAttributes="Bold" />
             <Label Text="Time, in your flow." TextColor="White" FontSize="28" FontAttributes="Bold"/>
           </VerticalStackLayout>
           <Border Grid.Column="1" Background="#17283A" Stroke="#35516A" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="12,8" VerticalOptions="Center">
