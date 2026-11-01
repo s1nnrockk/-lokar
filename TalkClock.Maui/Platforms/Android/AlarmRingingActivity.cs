@@ -180,13 +180,17 @@ public sealed class AlarmRingingActivity : Activity
         Finish();
     }
 
-    static TextView Text(string value, float size, string color, bool bold) => new(Application.Context)
+    TextView Text(string value, float size, string color, bool bold)
     {
-        Text = value,
-        TextSize = size,
-        SetTextColor = Color.ParseColor(color),
-        Typeface = bold ? Typeface.Create("sans-serif-medium", TypefaceStyle.Normal) : Typeface.Create("sans-serif-light", TypefaceStyle.Normal)
-    };
+        var view = new TextView(this)
+        {
+            Text = value,
+            TextSize = size,
+            Typeface = Typeface.Create(bold ? "sans-serif-medium" : "sans-serif-light", TypefaceStyle.Normal)
+        };
+        view.SetTextColor(Color.ParseColor(color));
+        return view;
+    }
 
     Button ActionButton(string title, string textColor, string fill)
     {
