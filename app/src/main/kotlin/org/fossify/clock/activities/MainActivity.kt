@@ -96,6 +96,9 @@ class MainActivity : SimpleActivity() {
     override fun onResume() {
         super.onResume()
         setupTopAppBar(binding.mainAppbar, topBarColor = getProperBackgroundColor())
+        binding.mainToolbar.setBackgroundResource(
+            if (config.liquidGlass) R.drawable.glass_toolbar_background else R.color.color_primary
+        )
         val configTextColor = getProperTextColor()
         if (storedTextColor != configTextColor) {
             getInactiveTabIndexes(binding.viewPager.currentItem).forEach {
@@ -105,7 +108,11 @@ class MainActivity : SimpleActivity() {
 
         val configBackgroundColor = getProperBackgroundColor()
         if (storedBackgroundColor != configBackgroundColor) {
-            binding.mainTabsHolder.background = configBackgroundColor.toDrawable()
+            binding.mainTabsHolder.background = if (config.liquidGlass) {
+                getDrawable(R.drawable.glass_bottom_bar_background)
+            } else {
+                configBackgroundColor.toDrawable()
+            }
         }
 
         val configPrimaryColor = getProperPrimaryColor()
@@ -270,14 +277,14 @@ class MainActivity : SimpleActivity() {
         val tabDrawables = arrayOf(
             R.drawable.ic_clock_vector,
             R.drawable.ic_alarm_vector,
-            R.drawable.ic_stopwatch_vector,
-            R.drawable.ic_hourglass_vector
+            R.drawable.ic_hourglass_vector,
+            R.drawable.ic_stopwatch_vector
         )
         val tabLabels = arrayOf(
             R.string.clock,
             org.fossify.commons.R.string.alarm,
-            R.string.stopwatch,
-            R.string.timer
+            R.string.timer,
+            R.string.stopwatch
         )
 
         tabDrawables.forEachIndexed { i, drawableId ->
@@ -326,7 +333,11 @@ class MainActivity : SimpleActivity() {
         }
 
         binding.mainTabsHolder.getTabAt(binding.viewPager.currentItem)?.select()
-        binding.mainTabsHolder.setBackgroundResource(R.drawable.glass_bottom_bar_background)
+        binding.mainTabsHolder.background = if (config.liquidGlass) {
+            getDrawable(R.drawable.glass_bottom_bar_background)
+        } else {
+            getBottomNavigationBackgroundColor().toDrawable()
+        }
     }
 
     private fun getInactiveTabIndexes(activeIndex: Int): List<Int> {
