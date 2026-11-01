@@ -36,13 +36,21 @@ public sealed class AlarmPlaybackService : Service
             PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
         var notificationBuilder = Build.VERSION.SdkInt >= BuildVersionCodes.O
             ? new Notification.Builder(this, ChannelId)
-            : new Notification.Builder(this);
+            : new Notification.Builder(this);        var ringingIntent = new Intent(this, typeof(AlarmRingingActivity));
+        ringingIntent.PutExtra("alarm_id", intent?.GetIntExtra("alarm_id", 7319) ?? 7319);
+        ringingIntent.PutExtra("alarm_label", label);
+        ringingIntent.PutExtra("alarm_vibrate", vibrate);
+        ringingIntent.PutExtra("alarm_gradual_volume", gradual);
+        ringingIntent.SetFlags(ActivityFlags.NewTask | ActivityFlags.SingleTop);
+        var fullScreenPending = PendingIntent.GetActivity(this, intent?.GetIntExtra("alarm_id", 7319) ?? 7319,
+            ringingIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
         var notification = notificationBuilder
             .SetContentTitle(string.IsNullOrWhiteSpace(label) ? "Clokar alarm" : label)
             .SetContentText("Alarm is ringing")
             .SetSmallIcon(Android.Resource.Drawable.IcLockIdleAlarm)
             .SetOngoing(true)
             .SetCategory(Notification.CategoryAlarm)
+            .SetFullScreenIntent(fullScreenPending, true)
             .AddAction(new Notification.Action.Builder(null, "Dismiss", stopPending).Build())
             .Build();
         StartForeground(NotificationId, notification);
