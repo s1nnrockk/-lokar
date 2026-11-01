@@ -91,7 +91,8 @@
         <Button Text="◷ Clock" Clicked="OnClockTabClicked" BackgroundColor="#1B3044" TextColor="#A7DFFF" CornerRadius="16" FontSize="11"/>
         <Button Grid.Column="1" Text="◉ Alarm" Clicked="OnAlarmTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
         <Button Grid.Column="2" Text="⌛ Timer" Clicked="OnTimerTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
-        <Button Grid.Column="3" Text="◴ Watch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="10"/>\n        <Button Grid.Column="4" Text="⚙ Settings" Clicked="OnSettingsTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="10"/>
+        <Button Grid.Column="3" Text="◴ Watch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="10"/>
+        <Button Grid.Column="4" Text="⚙ Settings" Clicked="OnSettingsTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="10"/>
       </Grid>
     </Border>
   </Grid>
