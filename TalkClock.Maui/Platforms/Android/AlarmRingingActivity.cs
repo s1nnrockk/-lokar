@@ -115,7 +115,8 @@ public sealed class AlarmRingingActivity : Activity
         content.AddView(hint, MatchWrap());
         content.AddView(Spacer(34), MatchWrap());
 
-        var snooze = ActionButton("Snooze  ·  5 min", "#DCEEFF", "#19364E");
+        var snoozeMinutes = Preferences.Get("alarm_snooze_minutes", 5);
+        var snooze = ActionButton($"Snooze  ·  {snoozeMinutes} min", "#DCEEFF", "#19364E");
         snooze.Click += (_, _) => SnoozeAlarm();
         content.AddView(snooze, new LinearLayout.LayoutParams(-1, Dp(58)));
         content.AddView(Spacer(12), MatchWrap());
@@ -163,7 +164,7 @@ public sealed class AlarmRingingActivity : Activity
         AndroidAlarm.StopPlayback(this);
         var notifications = (NotificationManager?)GetSystemService(NotificationService);
         notifications?.Cancel(_alarmId);
-        AndroidAlarm.Snooze(_alarmId, _alarmLabel, _vibrate, _gradual);
+        AndroidAlarm.Snooze(_alarmId, _alarmLabel, _vibrate, _gradual, Preferences.Get("alarm_snooze_minutes", 5));
         Finish();
     }
 
