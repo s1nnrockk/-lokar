@@ -88,8 +88,8 @@ public static class AndroidAlarm
         var pending = PendingIntent.GetBroadcast(Context, TimerRequestCode, intent, PendingIntentFlags.NoCreate | PendingIntentFlags.Immutable);
         if (pending is not null) { Manager.Cancel(pending); pending.Cancel(); }
     }
-    public static void Snooze(int id, string label, bool vibrate, bool gradualVolume)
-        => ScheduleAt(id, label, [], DateTimeOffset.Now.AddMinutes(5).ToUnixTimeMilliseconds(), SnoozeFireAction, vibrate, gradualVolume);
+    public static void Snooze(int id, string label, bool vibrate, bool gradualVolume, int minutes = 5)
+        => ScheduleAt(id, label, [], DateTimeOffset.Now.AddMinutes(Math.Clamp(minutes, 1, 60)).ToUnixTimeMilliseconds(), SnoozeFireAction, vibrate, gradualVolume);
 
     static List<AlarmItem> LoadAlarms()
     {
@@ -142,7 +142,7 @@ public static class AndroidAlarm
         }
         var builder = new Notification.Builder(context, channelId)
             .SetContentTitle(string.IsNullOrWhiteSpace(label) ? "TalkClock" : label)
-            .SetContentText(snoozable ? "Alarm • tap Snooze for 5 minutes" : "Timer finished")
+            .SetContentText(snoozable ? $"Alarm • tap Snooze for {Preferences.Get("alarm_snooze_minutes", 5)} minutes" : "Timer finished")
             .SetSmallIcon(Android.Resource.Drawable.IcLockIdleAlarm)
             .SetAutoCancel(true)
             .SetCategory(Notification.CategoryAlarm)
@@ -157,7 +157,7 @@ public static class AndroidAlarm
             snoozeIntent.PutExtra("alarm_gradual_volume", gradualVolume);
             var snoozePending = PendingIntent.GetBroadcast(context, id + 100000, snoozeIntent,
                 PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
-            builder.AddAction(new Notification.Action.Builder(null, "Snooze 5 min", snoozePending).Build());
+            builder.AddAction(new Notification.Action.Builder(null, $"Snooze {Preferences.Get("alarm_snooze_minutes", 5)} min", snoozePending).Build());
         }
         manager?.Notify(id, builder.Build());
     }
@@ -190,7 +190,7 @@ public class AlarmReceiver : BroadcastReceiver
             AndroidAlarm.StopPlayback(context);
             var notifications = (NotificationManager?)context.GetSystemService(Context.NotificationService);
             notifications?.Cancel(id);
-            AndroidAlarm.Snooze(id, label, snoozeVibrate, snoozeGradual);
+            AndroidAlarm.Snooze(id, label, snoozeVibrate, snoozeGradual, Preferences.Get("alarm_snooze_minutes", 5));
             return;
         }
         var snoozable = action != "com.sinrok.talkclock.SNOOZE_FIRE";
