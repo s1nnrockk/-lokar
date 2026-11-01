@@ -247,6 +247,6 @@ public partial class MainPage : ContentPage
     {
         LapList.Clear();
         for (var i = _laps.Count - 1; i >= 0; i--)
-            LapList.Children.Add(new Label { Text = $"Lap {i + 1}     {_laps[i]:hh\:mm\:ss\.ff}", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
+            LapList.Children.Add(new Label { Text = $"Lap {i + 1}     {_laps[i].ToString(@"hh\:mm\:ss\.ff")}", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
     }
 }
