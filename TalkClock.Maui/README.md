@@ -1,4 +1,4 @@
-# TalkClock MAUI (C# rewrite)
+# Clokar (C#/.NET MAUI rewrite)
 
 A separate C#/.NET MAUI Android implementation. The original Kotlin app remains unchanged.
 
@@ -14,14 +14,14 @@ A separate C#/.NET MAUI Android implementation. The original Kotlin app remains 
 
 ## Add the widget
 
-Install the APK, then long-press an empty area of the Android home screen, open **Widgets**, find **TalkClock**, and drag the clock widget onto the home screen. Resize it with the launcher handles. Tap the widget to open TalkClock.
+Install the APK, then long-press an empty area of the Android home screen, open **Widgets**, find **Clokar**, and drag the clock widget onto the home screen. Resize it with the launcher handles. Tap the widget to open Clokar.
 
 ## Build
 Install the .NET 10 SDK and MAUI Android workload:
 
 ```sh
 dotnet workload install maui-android
-dotnet publish TalkClock.Maui.csproj -f net10.0-android -c Release -p:AndroidPackageFormat=apk
+dotnet publish Clokar.Maui.csproj -f net10.0-android -c Release -p:AndroidPackageFormat=apk
 ```
 
 GitHub Actions builds an APK artifact from this project.
