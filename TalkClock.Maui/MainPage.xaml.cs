@@ -250,7 +250,7 @@ public partial class MainPage : ContentPage
             4 => "#FFC978", 5 => "#9BE7F2", _ => "#A7DFFF"
         };
         var color = Color.FromArgb(accent);
-        ClockLabel.TextColor = color;
+        ClockLabel.TextColor = Preferences.Get("accessibility_high_contrast", false) ? Colors.White : color;
         CreateAlarmButton.BackgroundColor = color;
         TimerButton.BackgroundColor = color;
         StopwatchButton.BackgroundColor = color;
