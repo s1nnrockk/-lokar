@@ -7,6 +7,8 @@ using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using View = Android.Views.View;
+using Button = Android.Widget.Button;
 
 namespace TalkClock;
 
@@ -27,7 +29,7 @@ public sealed class AlarmRingingActivity : Activity
     bool _gradual = true;
     bool _finished;
 
-    public override void OnCreate(Bundle? savedInstanceState)
+    protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
         Window?.AddFlags(WindowManagerFlags.ShowWhenLocked | WindowManagerFlags.TurnScreenOn |
