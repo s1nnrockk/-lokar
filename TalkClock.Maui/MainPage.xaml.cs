@@ -110,6 +110,21 @@ public partial class MainPage : ContentPage
         }
         if (_alarms.Count == 0) AlarmList.Children.Add(new Label { Text = "No alarms yet", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
     }
+    void RestoreTimer()
+    {
+        var raw = Preferences.Get("timer_end_utc", "");
+        if (long.TryParse(raw, out var ticks))
+        {
+            var end = new DateTime(ticks, DateTimeKind.Utc).ToLocalTime();
+            _timerRemaining = end - DateTime.Now;
+            if (_timerRemaining > TimeSpan.Zero)
+            {
+                _timerEnd = end; _timerRunning = true; TimerButton.Text = "Pause";
+                TimerStatus.Text = _timerRemaining.ToString(@"hh\:mm\:ss");
+            }
+            else Preferences.Remove("timer_end_utc");
+        }
+    }
     void OnTimerClicked(object sender, EventArgs e)
     {
         if (_timerRunning)
@@ -117,13 +132,13 @@ public partial class MainPage : ContentPage
             _timerRemaining = _timerEnd - DateTime.Now;
             _timerRunning = false;
             TimerButton.Text = "Resume";
+            Preferences.Remove("timer_end_utc");
+#if ANDROID
+            AndroidAlarm.CancelTimer();
+#endif
             return;
         }
-        if (TimerButton.Text == "Resume")
-        {
-            if (_timerRemaining <= TimeSpan.Zero) _timerRemaining = TimeSpan.FromMinutes(5);
-        }
-        else
+        if (TimerButton.Text != "Resume")
         {
             int.TryParse(TimerMinutes.Text, out var mins);
             int.TryParse(TimerSeconds.Text, out var secs);
@@ -133,6 +148,11 @@ public partial class MainPage : ContentPage
         _timerEnd = DateTime.Now.Add(_timerRemaining);
         _timerRunning = true;
         TimerButton.Text = "Pause";
+        Preferences.Set("timer_end_utc", _timerEnd.ToUniversalTime().Ticks.ToString());
+#if ANDROID
+        try { AndroidAlarm.ScheduleTimer(new DateTimeOffset(_timerEnd).ToUnixTimeMilliseconds()); }
+        catch (Exception ex) { MainThread.BeginInvokeOnMainThread(async () => await DisplayAlert("Timer scheduling", ex.Message, "OK")); }
+#endif
     }
     void OnStopwatchClicked(object sender, EventArgs e)
     {
