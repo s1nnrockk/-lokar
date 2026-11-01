@@ -6,7 +6,7 @@ using Android.Widget;
 
 namespace TalkClock;
 
-[BroadcastReceiver(Name = "com.sinrok.talkclock.ClockWidgetProvider", Exported = true)]
+[BroadcastReceiver(Name = "com.sinrok.clokar.ClockWidgetProvider", Exported = true)]
 [IntentFilter(new[] { AppWidgetManager.ActionAppwidgetUpdate })]
 [MetaData("android.appwidget.provider", Resource = "@xml/talkclock_widget_info")]
 public sealed class ClockWidgetProvider : AppWidgetProvider
