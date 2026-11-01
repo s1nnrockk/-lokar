@@ -17,7 +17,7 @@
         android:autoSizeMinTextSize="@dimen/extra_big_text_size"
         android:autoSizeStepGranularity="2sp"
         android:autoSizeTextType="uniform"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/glass_card_background"
         android:fontFeatureSettings="tnum"
         android:gravity="center_horizontal"
         android:includeFontPadding="false"
