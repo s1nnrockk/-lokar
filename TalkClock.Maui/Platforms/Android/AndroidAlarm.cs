@@ -88,8 +88,8 @@ public static class AndroidAlarm
         var pending = PendingIntent.GetBroadcast(Context, TimerRequestCode, intent, PendingIntentFlags.NoCreate | PendingIntentFlags.Immutable);
         if (pending is not null) { Manager.Cancel(pending); pending.Cancel(); }
     }
-    public static void Snooze(int id, string label)
-        => ScheduleAt(id, label, [], DateTimeOffset.Now.AddMinutes(5).ToUnixTimeMilliseconds(), SnoozeFireAction);
+    public static void Snooze(int id, string label, bool vibrate, bool gradualVolume)
+        => ScheduleAt(id, label, [], DateTimeOffset.Now.AddMinutes(5).ToUnixTimeMilliseconds(), SnoozeFireAction, vibrate, gradualVolume);
 
     static List<AlarmItem> LoadAlarms()
     {
@@ -129,7 +129,7 @@ public static class AndroidAlarm
         else context.StartService(serviceIntent);
     }
 
-    public static void ShowNotification(Context context, int id, string label, bool snoozable)
+    public static void ShowNotification(Context context, int id, string label, bool snoozable, bool vibrate = true, bool gradualVolume = true)
     {
         const string channelId = "alarms";
         var manager = (NotificationManager?)context.GetSystemService(Context.NotificationService);
@@ -148,6 +148,8 @@ public static class AndroidAlarm
             snoozeIntent.SetAction(SnoozeAction);
             snoozeIntent.PutExtra("alarm_id", id);
             snoozeIntent.PutExtra("alarm_label", label);
+            snoozeIntent.PutExtra("alarm_vibrate", vibrate);
+            snoozeIntent.PutExtra("alarm_gradual_volume", gradualVolume);
             var snoozePending = PendingIntent.GetBroadcast(context, id + 100000, snoozeIntent,
                 PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
             builder.AddAction(new Notification.Action.Builder(null, "Snooze 5 min", snoozePending).Build());
@@ -176,14 +178,17 @@ public class AlarmReceiver : BroadcastReceiver
         }
         if (action == "com.sinrok.talkclock.SNOOZE_REQUEST")
         {
-            AndroidAlarm.Snooze(id, label);
+            var snoozeVibrate = intent.GetBooleanExtra("alarm_vibrate", true);
+            var snoozeGradual = intent.GetBooleanExtra("alarm_gradual_volume", true);
+            AndroidAlarm.StopPlayback(context);
+            AndroidAlarm.Snooze(id, label, snoozeVibrate, snoozeGradual);
             return;
         }
         var snoozable = action != "com.sinrok.talkclock.SNOOZE_FIRE";
         var vibrate = intent.GetBooleanExtra("alarm_vibrate", true);
         var gradualVolume = intent.GetBooleanExtra("alarm_gradual_volume", true);
         AndroidAlarm.StartPlayback(context, id, label, vibrate, gradualVolume);
-        AndroidAlarm.ShowNotification(context, id, label, snoozable);
+        AndroidAlarm.ShowNotification(context, id, label, snoozable, vibrate, gradualVolume);
         if (!snoozable) return;
         var rawDays = intent.GetStringExtra("alarm_days") ?? "";
         var days = rawDays.Split(',', StringSplitOptions.RemoveEmptyEntries)
