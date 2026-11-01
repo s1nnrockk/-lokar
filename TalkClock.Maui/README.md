@@ -14,6 +14,8 @@ A separate C#/.NET MAUI Android implementation. The original Kotlin app remains 
 - Appearance settings: Liquid Glass toggle, three dark themes and six accent colors, saved locally
 - Clock settings: 12/24-hour format and optional seconds on local and world clocks
 - Alarm defaults: vibration, gradual volume and configurable 5/10/15/20-minute snooze
+- Accessibility settings: adjustable text scale, high-contrast colors, reduced motion on the alarm screen, and optional haptic touch feedback
+- Screen-reader names for bottom navigation, alarm controls, and world-clock removal actions
 - Device setting to keep the screen awake
 
 ## Add the widget
@@ -31,4 +33,4 @@ dotnet publish Clokar.Maui.csproj -f net10.0-android -c Release -p:AndroidPackag
 GitHub Actions builds an APK artifact from this project.
 
 ## Current limitations
-Custom ringtone selection, multiple simultaneous timers, advanced widget layout customization, and full accessibility/localization parity are not included yet. Android exact-alarm and notification access must be allowed by the user for reliable background delivery.
+Custom ringtone selection, multiple simultaneous timers, advanced widget layout customization, and full localization parity and system-wide dynamic type integration are not included yet. Android exact-alarm and notification access must be allowed by the user for reliable background delivery.
