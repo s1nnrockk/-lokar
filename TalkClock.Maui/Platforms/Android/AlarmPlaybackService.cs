@@ -31,6 +31,7 @@ public sealed class AlarmPlaybackService : Service
 
         var stopIntent = new Intent(this, typeof(AlarmReceiver));
         stopIntent.SetAction("com.sinrok.talkclock.STOP_ALARM");
+        stopIntent.PutExtra("alarm_id", intent?.GetIntExtra("alarm_id", 7319) ?? 7319);
         var stopPending = PendingIntent.GetBroadcast(this, NotificationId, stopIntent,
             PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
         var notification = new Notification.Builder(this, ChannelId)
