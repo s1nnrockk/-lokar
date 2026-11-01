@@ -20,7 +20,8 @@ public sealed class ClockWidgetProvider : AppWidgetProvider
             var now = DateTime.Now;
             views.SetTextViewText(Resource.Id.widget_date, now.ToString("dddd, MMMM d"));
             views.SetTextViewText(Resource.Id.widget_caption, "YOUR TIME, IN FLOW");
-            var launchIntent = new Intent(context, typeof(MainActivity));
+            var launchIntent = context.PackageManager?.GetLaunchIntentForPackage(context.PackageName);
+            if (launchIntent is null) continue;
             launchIntent.SetFlags(ActivityFlags.NewTask | ActivityFlags.ClearTop);
             var launchPendingIntent = PendingIntent.GetActivity(
                 context, appWidgetId, launchIntent,
