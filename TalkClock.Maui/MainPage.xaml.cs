@@ -245,6 +245,9 @@ public partial class MainPage : ContentPage
         };
         var color = Color.FromArgb(accent);
         ClockLabel.TextColor = color;
+        CreateAlarmButton.BackgroundColor = color;
+        TimerButton.BackgroundColor = color;
+        StopwatchButton.BackgroundColor = color;
         foreach (var control in new Switch[] { GlassSwitch, HourFormatSwitch, SecondsSwitch, DefaultVibrateSwitch, DefaultGradualSwitch, KeepAwakeSwitch, AlarmVibrateSwitch, AlarmGradualSwitch })
             control.OnColor = color;
         foreach (var control in new CheckBox[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 })
