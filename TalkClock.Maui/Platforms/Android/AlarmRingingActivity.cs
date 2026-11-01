@@ -192,8 +192,7 @@ public sealed class AlarmRingingActivity : Activity
 
     Button ActionButton(string title, string textColor, string fill)
     {
-        var button = new Button(this) { Text = title, TextSize = 16, AllCaps = false }
-        ;
+        var button = new Button(this) { Text = title, TextSize = 16 };
         button.SetTextColor(Color.ParseColor(textColor));
         button.Background = new GradientDrawable { Shape = ShapeType.Rectangle, CornerRadius = Dp(20), Color = ColorStateList.ValueOf(Color.ParseColor(fill)) };
         return button;
