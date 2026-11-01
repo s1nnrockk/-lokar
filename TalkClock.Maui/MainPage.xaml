@@ -1,63 +1,89 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TalkClock.MainPage" BackgroundColor="#07111F">
-  <ScrollView>
-    <VerticalStackLayout Padding="22,26,22,36" Spacing="16">
-      <Label Text="T A L K C L O C K" TextColor="#8DD7FF" FontSize="12" FontAttributes="Bold" />
-      <Label Text="Your time,&#10;beautifully." TextColor="White" FontSize="34" FontAttributes="Bold"/>
-      <Border Background="#142235" Stroke="#29425C" StrokeThickness="1" StrokeShape="RoundRectangle 28" Padding="22">
-        <VerticalStackLayout Spacing="8">
-          <Label Text="LOCAL TIME" TextColor="#91A8C0" FontSize="11" />
-          <Label x:Name="ClockLabel" Text="00:00:00" TextColor="White" FontSize="48" FontAttributes="Bold" HorizontalOptions="Center"/>
-          <Label x:Name="DateLabel" Text="Monday, January 1" TextColor="#91A8C0" HorizontalOptions="Center"/>
-        </VerticalStackLayout>
-      </Border>
-      <Border Background="#142235" Stroke="#29425C" StrokeShape="RoundRectangle 22" Padding="18">
-        <VerticalStackLayout Spacing="12">
-          <Label Text="ALARMS" TextColor="#8DD7FF" FontAttributes="Bold"/>
-          <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-            <TimePicker x:Name="AlarmTimePicker" Time="07:00:00" TextColor="White" />
-            <Entry x:Name="AlarmLabelEntry" Grid.Column="1" Placeholder="Label" Text="Alarm" TextColor="White" PlaceholderColor="#91A8C0"/>
-          </Grid>
-          <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="4">
-            <VerticalStackLayout><CheckBox x:Name="Day0" Color="#8DD7FF"/><Label Text="Su" TextColor="#91A8C0" FontSize="11" HorizontalOptions="Center"/></VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="1"><CheckBox x:Name="Day1" Color="#8DD7FF"/><Label Text="Mo" TextColor="#91A8C0" FontSize="11" HorizontalOptions="Center"/></VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="2"><CheckBox x:Name="Day2" Color="#8DD7FF"/><Label Text="Tu" TextColor="#91A8C0" FontSize="11" HorizontalOptions="Center"/></VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="3"><CheckBox x:Name="Day3" Color="#8DD7FF"/><Label Text="We" TextColor="#91A8C0" FontSize="11" HorizontalOptions="Center"/></VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="4"><CheckBox x:Name="Day4" Color="#8DD7FF"/><Label Text="Th" TextColor="#91A8C0" FontSize="11" HorizontalOptions="Center"/></VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="5"><CheckBox x:Name="Day5" Color="#8DD7FF"/><Label Text="Fr" TextColor="#91A8C0" FontSize="11" HorizontalOptions="Center"/></VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="6"><CheckBox x:Name="Day6" Color="#8DD7FF"/><Label Text="Sa" TextColor="#91A8C0" FontSize="11" HorizontalOptions="Center"/></VerticalStackLayout>
-          </Grid>
-          <Button Text="＋ Add alarm" Clicked="OnSetAlarmClicked" BackgroundColor="#8DD7FF" TextColor="#07111F" CornerRadius="16"/>
-          <Label x:Name="AlarmStatus" Text="No alarms scheduled" TextColor="#91A8C0" FontSize="12"/>
-          <VerticalStackLayout x:Name="AlarmList" Spacing="8"/>
-        </VerticalStackLayout>
-      </Border>
-      <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-        <Border Grid.Column="0" Background="#142235" Stroke="#29425C" StrokeShape="RoundRectangle 22" Padding="16">
-          <VerticalStackLayout Spacing="10">
-            <Label Text="TIMER" TextColor="#8DD7FF" FontAttributes="Bold"/>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
-              <Entry x:Name="TimerMinutes" Placeholder="Min" Keyboard="Numeric" Text="5" TextColor="White" PlaceholderColor="#91A8C0"/>
-              <Entry x:Name="TimerSeconds" Grid.Column="1" Placeholder="Sec" Keyboard="Numeric" Text="0" TextColor="White" PlaceholderColor="#91A8C0"/>
+             x:Class="TalkClock.MainPage" BackgroundColor="#050B14">
+  <Grid RowDefinitions="*,Auto">
+    <ScrollView Grid.Row="0">
+      <VerticalStackLayout Padding="20,24,20,22" Spacing="16">
+        <Grid ColumnDefinitions="*,Auto">
+          <VerticalStackLayout Spacing="3">
+            <Label Text="TALKCLOCK" TextColor="#A7DFFF" FontSize="11" FontAttributes="Bold" />
+            <Label Text="Time, in your flow." TextColor="White" FontSize="28" FontAttributes="Bold"/>
+          </VerticalStackLayout>
+          <Border Grid.Column="1" Background="#17283A" Stroke="#35516A" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="12,8" VerticalOptions="Center">
+            <Label Text="● OFFLINE" TextColor="#A7DFFF" FontSize="10" FontAttributes="Bold"/>
+          </Border>
+        </Grid>
+        <Border Background="#142437" Stroke="#3A5871" StrokeThickness="1" StrokeShape="RoundRectangle 28" Padding="22">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+              <GradientStop Color="#203A50" Offset="0"/>
+              <GradientStop Color="#101D2D" Offset="1"/>
+            </LinearGradientBrush>
+          </Border.Background>
+          <VerticalStackLayout Spacing="6">
+            <Label Text="LOCAL TIME" TextColor="#A3BED1" FontSize="10" FontAttributes="Bold"/>
+            <Label x:Name="ClockLabel" Text="00:00:00" TextColor="White" FontSize="48" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Label x:Name="DateLabel" Text="Monday, January 1" TextColor="#A3BED1" HorizontalOptions="Center"/>
+          </VerticalStackLayout>
+        </Border>
+        <Border x:Name="AlarmSection" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="18">
+          <VerticalStackLayout Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+              <Label Text="Alarms" TextColor="White" FontSize="21" FontAttributes="Bold"/>
+              <Label Grid.Column="1" Text="⏰" FontSize="20"/>
             </Grid>
-            <Button x:Name="TimerButton" Text="Start timer" Clicked="OnTimerClicked" BackgroundColor="#8DD7FF" TextColor="#07111F" CornerRadius="16"/>
-            <Label x:Name="TimerStatus" Text="Ready" TextColor="#91A8C0" FontSize="12"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <TimePicker x:Name="AlarmTimePicker" Time="07:00:00" TextColor="White" />
+              <Entry x:Name="AlarmLabelEntry" Grid.Column="1" Placeholder="Alarm label" Text="Alarm" TextColor="White" PlaceholderColor="#829AAF"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="2">
+              <VerticalStackLayout><CheckBox x:Name="Day0" Color="#9BDFFF"/><Label Text="Su" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="1"><CheckBox x:Name="Day1" Color="#9BDFFF"/><Label Text="Mo" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="2"><CheckBox x:Name="Day2" Color="#9BDFFF"/><Label Text="Tu" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="3"><CheckBox x:Name="Day3" Color="#9BDFFF"/><Label Text="We" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="4"><CheckBox x:Name="Day4" Color="#9BDFFF"/><Label Text="Th" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="5"><CheckBox x:Name="Day5" Color="#9BDFFF"/><Label Text="Fr" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="6"><CheckBox x:Name="Day6" Color="#9BDFFF"/><Label Text="Sa" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+            </Grid>
+            <Button Text="＋  Add alarm" Clicked="OnSetAlarmClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16" FontAttributes="Bold"/>
+            <Label x:Name="AlarmStatus" Text="No alarms scheduled" TextColor="#829AAF" FontSize="12"/>
+            <VerticalStackLayout x:Name="AlarmList" Spacing="8"/>
           </VerticalStackLayout>
         </Border>
-        <Border Grid.Column="1" Background="#142235" Stroke="#29425C" StrokeShape="RoundRectangle 22" Padding="16">
-          <VerticalStackLayout Spacing="10">
-            <Label Text="STOPWATCH" TextColor="#8DD7FF" FontAttributes="Bold"/>
-            <Label x:Name="StopwatchLabel" Text="00:00.00" TextColor="White" FontSize="30" HorizontalOptions="Center"/>
-            <Button x:Name="StopwatchButton" Text="Start" Clicked="OnStopwatchClicked" BackgroundColor="#8DD7FF" TextColor="#07111F" CornerRadius="16"/>
-            <Button Text="Reset" Clicked="OnStopwatchResetClicked" BackgroundColor="#29425C" TextColor="White" CornerRadius="16"/>
-            <Button Text="Lap" Clicked="OnLapClicked" BackgroundColor="#29425C" TextColor="White" CornerRadius="16"/>
+        <Border x:Name="TimerSection" IsVisible="False" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="18">
+          <VerticalStackLayout Spacing="14">
+            <Grid ColumnDefinitions="*,Auto"><Label Text="Timer" TextColor="White" FontSize="21" FontAttributes="Bold"/><Label Grid.Column="1" Text="⌛" FontSize="20"/></Grid>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Entry x:Name="TimerMinutes" Placeholder="Minutes" Keyboard="Numeric" Text="5" TextColor="White" PlaceholderColor="#829AAF"/>
+              <Entry x:Name="TimerSeconds" Grid.Column="1" Placeholder="Seconds" Keyboard="Numeric" Text="0" TextColor="White" PlaceholderColor="#829AAF"/>
+            </Grid>
+            <Label x:Name="TimerStatus" Text="Ready" TextColor="#A7DFFF" FontSize="32" HorizontalOptions="Center"/>
+            <Button x:Name="TimerButton" Text="Start timer" Clicked="OnTimerClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16" FontAttributes="Bold"/>
           </VerticalStackLayout>
         </Border>
+        <Border x:Name="StopwatchSection" IsVisible="False" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="18">
+          <VerticalStackLayout Spacing="14">
+            <Grid ColumnDefinitions="*,Auto"><Label Text="Stopwatch" TextColor="White" FontSize="21" FontAttributes="Bold"/><Label Grid.Column="1" Text="◷" FontSize="20"/></Grid>
+            <Label x:Name="StopwatchLabel" Text="00:00:00.00" TextColor="White" FontSize="38" HorizontalOptions="Center"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Button x:Name="StopwatchButton" Text="Start" Clicked="OnStopwatchClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16"/>
+              <Button Grid.Column="1" Text="Lap" Clicked="OnLapClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="16"/>
+            </Grid>
+            <Button Text="Reset stopwatch" Clicked="OnStopwatchResetClicked" BackgroundColor="#1A2B3D" TextColor="#BBD0E0" CornerRadius="16"/>
+            <VerticalStackLayout x:Name="LapList" Spacing="6"/>
+          </VerticalStackLayout>
+        </Border>
+        <Label Text="Private by design • No ads • No account" TextColor="#526A7E" FontSize="11" HorizontalOptions="Center"/>
+      </VerticalStackLayout>
+    </ScrollView>
+    <Border Grid.Row="1" Background="#0C1724" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 22" Margin="14,0,14,12" Padding="6">
+      <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="4">
+        <Button Text="◷\nClock" Clicked="OnClockTabClicked" BackgroundColor="#1B3044" TextColor="#A7DFFF" CornerRadius="16" FontSize="11"/>
+        <Button Grid.Column="1" Text="◉\nAlarm" Clicked="OnAlarmTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
+        <Button Grid.Column="2" Text="⌛\nTimer" Clicked="OnTimerTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
+        <Button Grid.Column="3" Text="◴\nStopwatch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
       </Grid>
-      <VerticalStackLayout x:Name="LapList" Spacing="4"/>
-      <Label Text="Offline • No ads • No account" TextColor="#526A83" FontSize="12" HorizontalOptions="Center"/>
-    </VerticalStackLayout>
-  </ScrollView>
+    </Border>
+  </Grid>
 </ContentPage>
