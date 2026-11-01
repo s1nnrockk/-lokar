@@ -36,7 +36,8 @@ public sealed class AlarmPlaybackService : Service
             PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
         var notificationBuilder = Build.VERSION.SdkInt >= BuildVersionCodes.O
             ? new Notification.Builder(this, ChannelId)
-            : new Notification.Builder(this);        var ringingIntent = new Intent(this, typeof(AlarmRingingActivity));
+            : new Notification.Builder(this);
+        var ringingIntent = new Intent(this, typeof(AlarmRingingActivity));
         ringingIntent.PutExtra("alarm_id", intent?.GetIntExtra("alarm_id", 7319) ?? 7319);
         ringingIntent.PutExtra("alarm_label", label);
         ringingIntent.PutExtra("alarm_vibrate", vibrate);
@@ -50,6 +51,7 @@ public sealed class AlarmPlaybackService : Service
             .SetSmallIcon(Android.Resource.Drawable.IcLockIdleAlarm)
             .SetOngoing(true)
             .SetCategory(Notification.CategoryAlarm)
+            .SetPriority((int)NotificationPriority.Max)
             .SetFullScreenIntent(fullScreenPending, true)
             .AddAction(new Notification.Action.Builder(null, "Dismiss", stopPending).Build())
             .Build();
