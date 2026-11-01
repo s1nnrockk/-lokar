@@ -33,6 +33,8 @@ public partial class MainPage : ContentPage
         GlassSwitch.IsToggled = Preferences.Get("liquid_glass", true);
         HourFormatSwitch.IsToggled = Preferences.Get("use_24_hour", true);
         KeepAwakeSwitch.IsToggled = Preferences.Get("keep_awake", false);
+        AlarmVibrateSwitch.IsToggled = Preferences.Get("alarm_vibrate_default", true);
+        AlarmGradualSwitch.IsToggled = Preferences.Get("alarm_gradual_default", true);
         ApplyKeepAwake();
         ApplyGlass();
         ShowTab(0);
@@ -198,6 +200,8 @@ public partial class MainPage : ContentPage
 
     async void OnSetAlarmClicked(object sender, EventArgs e)
     {
+        Preferences.Set("alarm_vibrate_default", AlarmVibrateSwitch.IsToggled);
+        Preferences.Set("alarm_gradual_default", AlarmGradualSwitch.IsToggled);
         var days = new[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 }
             .Select((c, i) => (c.IsChecked, i)).Where(x => x.IsChecked).Select(x => x.i).ToList();
         var alarm = new AlarmItem
