@@ -131,10 +131,15 @@ public static class AndroidAlarm
 
     public static void ShowNotification(Context context, int id, string label, bool snoozable, bool vibrate = true, bool gradualVolume = true)
     {
-        const string channelId = "alarms";
+        const string channelId = "clokar_alarms_silent";
         var manager = (NotificationManager?)context.GetSystemService(Context.NotificationService);
         if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-            manager?.CreateNotificationChannel(new NotificationChannel(channelId, "Alarms", NotificationImportance.High) { Description = "Alarm and timer notifications" });
+        {
+            var alarmChannel = new NotificationChannel(channelId, "Alarms", NotificationImportance.Low)
+            { Description = "Silent alarm controls; alarm audio is handled by Clokar" };
+            alarmChannel.SetSound(null, null);
+            manager?.CreateNotificationChannel(alarmChannel);
+        }
         var builder = new Notification.Builder(context, channelId)
             .SetContentTitle(string.IsNullOrWhiteSpace(label) ? "TalkClock" : label)
             .SetContentText(snoozable ? "Alarm • tap Snooze for 5 minutes" : "Timer finished")
@@ -169,6 +174,8 @@ public class AlarmReceiver : BroadcastReceiver
         if (action == "com.sinrok.talkclock.STOP_ALARM")
         {
             AndroidAlarm.StopPlayback(context);
+            var notifications = (NotificationManager?)context.GetSystemService(Context.NotificationService);
+            notifications?.Cancel(id);
             return;
         }
         if (action == "com.sinrok.talkclock.TIMER_DONE")
