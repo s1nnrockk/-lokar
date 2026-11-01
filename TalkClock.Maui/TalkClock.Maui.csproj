@@ -10,7 +10,7 @@
     <SingleProject>true</SingleProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <ApplicationTitle>TalkClock</ApplicationTitle>
+    <ApplicationTitle>Clokar</ApplicationTitle>
     <ApplicationId>com.sinrok.talkclock</ApplicationId>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
