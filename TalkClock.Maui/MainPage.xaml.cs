@@ -163,7 +163,12 @@ public partial class MainPage : ContentPage
             if (BottomNav.Children[i] is Button b)
             {
                 b.BackgroundColor = i == tab ? Color.FromArgb("#1B3044") : Colors.Transparent;
-                b.TextColor = i == tab ? Color.FromArgb("#A7DFFF") : Color.FromArgb("#91A8BC");
+                var accent = Preferences.Get("clokar_accent", 0) switch
+                {
+                    1 => "#B9A2FF", 2 => "#8DE6C0", 3 => "#FF9DB5",
+                    4 => "#FFC978", 5 => "#9BE7F2", _ => "#A7DFFF"
+                };
+                b.TextColor = i == tab ? Color.FromArgb(accent) : Color.FromArgb("#91A8BC");
             }
         if (tab == 0) { AlarmSection.IsVisible = false; TimerSection.IsVisible = false; StopwatchSection.IsVisible = false; }
     }
@@ -229,8 +234,6 @@ public partial class MainPage : ContentPage
         var theme = Preferences.Get("clokar_theme", 0);
         var page = theme switch { 1 => "#050812", 2 => "#101114", _ => "#070D18" };
         BackgroundColor = Color.FromArgb(page);
-        var panel = theme switch { 1 => "#0D1422", 2 => "#1A1B20", _ => "#101D2B" };
-        _ = panel;
         ApplyGlass();
     }
     void ApplyAccent()
