@@ -6,11 +6,15 @@ A separate C#/.NET MAUI Android implementation. The original Kotlin app remains 
 - Live local clock and date, plus a persistent list of world clocks using IANA time-zone IDs
 - Quick timer presets (1, 5, 10, 25, and 60 minutes)
 - Multiple alarms with custom labels, enabled/disabled state, selected repeat weekdays, and one-shot scheduling
-- Android exact alarm delivery, high-priority notification, five-minute snooze action, and restoration of repeating alarms after reboot
+- Android exact alarm delivery, high-priority notification, configurable snooze action, and restoration of repeating alarms after reboot
 - Countdown timer with pause/resume, saved remaining deadline, and Android background completion notification
 - Stopwatch with start/pause/reset and saved lap history
 - Native Android resizable home-screen clock widget with a translucent Liquid Glass gradient, live digital time/date, and tap-to-open behavior
-- Dark glass-inspired layout
+- Redesigned Clokar interface with glass-style cards, compact bottom navigation and full settings screen
+- Appearance settings: Liquid Glass toggle, three dark themes and six accent colors, saved locally
+- Clock settings: 12/24-hour format and optional seconds on local and world clocks
+- Alarm defaults: vibration, gradual volume and configurable 5/10/15/20-minute snooze
+- Device setting to keep the screen awake
 
 ## Add the widget
 
@@ -26,5 +30,5 @@ dotnet publish Clokar.Maui.csproj -f net10.0-android -c Release -p:AndroidPackag
 
 GitHub Actions builds an APK artifact from this project.
 
-## Not yet ported from Fossify Clock
-This is not feature parity with the original app. In particular, custom alarm/ringtone selection, gradual volume increase, vibration preferences, dismiss/full-screen ringing UX, multiple simultaneous timers, advanced analog/digital widget customization, full appearance/settings screens, and every original accessibility/localization option remain to be implemented. Android exact-alarm and notification access must be allowed by the user for reliable background delivery.
+## Current limitations
+Custom ringtone selection, multiple simultaneous timers, advanced widget layout customization, and full accessibility/localization parity are not included yet. Android exact-alarm and notification access must be allowed by the user for reliable background delivery.
