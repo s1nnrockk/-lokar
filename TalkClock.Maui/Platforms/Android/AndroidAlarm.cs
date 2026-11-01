@@ -105,6 +105,11 @@ public static class AndroidAlarm
         alarms.Add(alarm);
         Context.GetSharedPreferences("talkclock_native", FileCreationMode.Private)?.Edit()?.PutString("alarms", JsonSerializer.Serialize(alarms))?.Apply();
     }
+    public static void CompleteOneShot(int id)
+    {
+        var stored = LoadAlarms().Where(a => a.Id != id).ToList();
+        Context.GetSharedPreferences("talkclock_native", FileCreationMode.Private)?.Edit()?.PutString("alarms", JsonSerializer.Serialize(stored))?.Apply();
+    }
     public static void RestoreAlarms()
     {
         foreach (var alarm in LoadAlarms().Where(a => a.Enabled)) Schedule(alarm);
@@ -167,6 +172,7 @@ public class AlarmReceiver : BroadcastReceiver
             var repeating = new AlarmItem { Id = id, Label = label, Days = days, Time = $"{hour:D2}:{minute:D2}" };
             AndroidAlarm.Schedule(repeating);
         }
+        else AndroidAlarm.CompleteOneShot(id);
     }
 }
 [BroadcastReceiver(Enabled = true, Exported = true)]
