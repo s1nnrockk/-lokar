@@ -1,17 +1,25 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.Maui.Dispatching;
 namespace TalkClock;
 public partial class MainPage : ContentPage
 {
+    const string AlarmsKey = "alarms_json";
+    const string LapsKey = "stopwatch_laps";
     readonly Stopwatch _stopwatch = new();
+    readonly List<TimeSpan> _laps = [];
+    List<AlarmItem> _alarms = [];
     IDispatcherTimer? _uiTimer;
-    IDispatcherTimer? _countdownTimer;
     DateTime _timerEnd;
+    TimeSpan _timerRemaining;
     bool _timerRunning;
     public MainPage()
     {
         InitializeComponent();
-        AlarmTimePicker.Time = new TimeSpan(7, 0, 0);
+        _alarms = LoadAlarms();
+        LoadLaps();
+        RenderAlarms();
+        RenderLaps();
         _uiTimer = Dispatcher.CreateTimer();
         _uiTimer.Interval = TimeSpan.FromMilliseconds(100);
         _uiTimer.Tick += (_, _) =>
@@ -19,63 +27,110 @@ public partial class MainPage : ContentPage
             var now = DateTime.Now;
             ClockLabel.Text = now.ToString("HH:mm:ss");
             DateLabel.Text = now.ToString("dddd, MMMM d");
-            StopwatchLabel.Text = _stopwatch.Elapsed.ToString(@"mm:ss.ff");
+            StopwatchLabel.Text = _stopwatch.Elapsed.ToString(@"hh\:mm\:ss\.ff");
             if (_timerRunning)
             {
-                var remaining = _timerEnd - DateTime.Now;
-                if (remaining <= TimeSpan.Zero)
+                _timerRemaining = _timerEnd - now;
+                if (_timerRemaining <= TimeSpan.Zero)
                 {
                     _timerRunning = false;
-                    _countdownTimer?.Stop();
+                    _timerRemaining = TimeSpan.Zero;
                     TimerStatus.Text = "Finished";
                     TimerButton.Text = "Start timer";
-                    DisplayAlert("Timer", "Your timer has finished.", "OK");
+                    MainThread.BeginInvokeOnMainThread(async () => await DisplayAlert("Timer", "Your timer has finished.", "OK"));
                 }
-                else TimerStatus.Text = remaining.ToString(@"hh:mm:ss");
+                else TimerStatus.Text = _timerRemaining.ToString(@"hh\:mm\:ss");
             }
         };
         _uiTimer.Start();
     }
+    List<AlarmItem> LoadAlarms()
+    {
+        try { return JsonSerializer.Deserialize<List<AlarmItem>>(Preferences.Get(AlarmsKey, "[]")) ?? []; }
+        catch { return []; }
+    }
+    void SaveAlarms() => Preferences.Set(AlarmsKey, JsonSerializer.Serialize(_alarms));
     async void OnSetAlarmClicked(object sender, EventArgs e)
     {
+        var days = new[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 }
+            .Select((c, i) => (c.IsChecked, i)).Where(x => x.IsChecked).Select(x => x.i).ToList();
+        var alarm = new AlarmItem
+        {
+            Id = _alarms.Count == 0 ? 1 : _alarms.Max(a => a.Id) + 1,
+            Time = AlarmTimePicker.Time.ToString(@"hh\:mm"),
+            Label = string.IsNullOrWhiteSpace(AlarmLabelEntry.Text) ? "Alarm" : AlarmLabelEntry.Text.Trim(),
+            Days = days
+        };
 #if ANDROID
         try
         {
-            var time = AlarmTimePicker.Time;
-            var now = DateTime.Now;
-            var target = now.Date.Add(time);
-            if (target <= now) target = target.AddDays(1);
-            var millis = new DateTimeOffset(target).ToUnixTimeMilliseconds();
-            AndroidAlarm.Schedule(millis);
-            AlarmStatus.Text = $"Alarm set for {target:ddd, HH:mm}";
+            AndroidAlarm.Schedule(alarm);
+            _alarms.Add(alarm);
+            SaveAlarms();
+            RenderAlarms();
+            AlarmStatus.Text = $"Next alarm: {AndroidAlarm.NextOccurrence(alarm):ddd, HH:mm}";
+            foreach (var c in new[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 }) c.IsChecked = false;
         }
         catch (Exception ex) { await DisplayAlert("Alarm unavailable", ex.Message, "OK"); }
 #else
-        await DisplayAlert("Alarm", "Alarm scheduling is available on Android.", "OK");
+        _alarms.Add(alarm); SaveAlarms(); RenderAlarms();
+        await DisplayAlert("Alarm", "Alarm saved. Android is required to schedule system alarms.", "OK");
 #endif
+    }
+    void RenderAlarms()
+    {
+        AlarmList.Clear();
+        foreach (var alarm in _alarms.OrderBy(a => a.Time))
+        {
+            var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, Padding = 10, BackgroundColor = Color.FromArgb("#0D1B2B") };
+            var text = new VerticalStackLayout { Spacing = 2 };
+            text.Children.Add(new Label { Text = alarm.Time, FontSize = 24, TextColor = Colors.White, FontAttributes = FontAttributes.Bold });
+            text.Children.Add(new Label { Text = $"{alarm.Label} • {alarm.RepeatText}", FontSize = 12, TextColor = Color.FromArgb("#91A8C0") });
+            row.Add(text, 0);
+            var enabled = new Switch { IsToggled = alarm.Enabled, OnColor = Color.FromArgb("#8DD7FF"), VerticalOptions = LayoutOptions.Center };
+            enabled.Toggled += (_, args) =>
+            {
+                alarm.Enabled = args.Value;
+#if ANDROID
+                if (args.Value) AndroidAlarm.Schedule(alarm); else AndroidAlarm.Cancel(alarm.Id);
+#endif
+                SaveAlarms();
+            };
+            row.Add(enabled, 1);
+            var delete = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#29425C"), Padding = new Thickness(12, 4), VerticalOptions = LayoutOptions.Center };
+            delete.Clicked += (_, _) =>
+            {
+#if ANDROID
+                AndroidAlarm.Cancel(alarm.Id);
+#endif
+                _alarms.Remove(alarm); SaveAlarms(); RenderAlarms();
+            };
+            row.Add(delete, 2);
+            AlarmList.Children.Add(new Border { Stroke = Color.FromArgb("#29425C"), StrokeShape = new RoundRectangle(16), Padding = 2, Content = row });
+        }
+        if (_alarms.Count == 0) AlarmList.Children.Add(new Label { Text = "No alarms yet", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
     }
     void OnTimerClicked(object sender, EventArgs e)
     {
         if (_timerRunning)
         {
+            _timerRemaining = _timerEnd - DateTime.Now;
             _timerRunning = false;
             TimerButton.Text = "Resume";
             return;
         }
         if (TimerButton.Text == "Resume")
         {
-            var parts = TimerStatus.Text.Split(':');
-            if (TimeSpan.TryParse(TimerStatus.Text, out var remain)) _timerEnd = DateTime.Now.Add(remain);
-            else _timerEnd = DateTime.Now.AddMinutes(5);
+            if (_timerRemaining <= TimeSpan.Zero) _timerRemaining = TimeSpan.FromMinutes(5);
         }
         else
         {
             int.TryParse(TimerMinutes.Text, out var mins);
             int.TryParse(TimerSeconds.Text, out var secs);
-            var duration = TimeSpan.FromMinutes(Math.Clamp(mins, 0, 999)).Add(TimeSpan.FromSeconds(Math.Clamp(secs, 0, 59)));
-            if (duration <= TimeSpan.Zero) { TimerStatus.Text = "Enter a duration"; return; }
-            _timerEnd = DateTime.Now.Add(duration);
+            _timerRemaining = TimeSpan.FromMinutes(Math.Clamp(mins, 0, 999)).Add(TimeSpan.FromSeconds(Math.Clamp(secs, 0, 59)));
+            if (_timerRemaining <= TimeSpan.Zero) { TimerStatus.Text = "Enter a duration"; return; }
         }
+        _timerEnd = DateTime.Now.Add(_timerRemaining);
         _timerRunning = true;
         TimerButton.Text = "Pause";
     }
@@ -86,8 +141,23 @@ public partial class MainPage : ContentPage
     }
     void OnStopwatchResetClicked(object sender, EventArgs e)
     {
-        _stopwatch.Reset();
-        StopwatchLabel.Text = "00:00.00";
-        StopwatchButton.Text = "Start";
+        _stopwatch.Reset(); _laps.Clear(); SaveLaps(); RenderLaps();
+        StopwatchLabel.Text = "00:00.00"; StopwatchButton.Text = "Start";
+    }
+    void OnLapClicked(object sender, EventArgs e)
+    {
+        if (!_stopwatch.IsRunning) return;
+        _laps.Add(_stopwatch.Elapsed); SaveLaps(); RenderLaps();
+    }
+    void LoadLaps()
+    {
+        try { _laps.AddRange(JsonSerializer.Deserialize<List<TimeSpan>>(Preferences.Get(LapsKey, "[]")) ?? []); } catch { }
+    }
+    void SaveLaps() => Preferences.Set(LapsKey, JsonSerializer.Serialize(_laps));
+    void RenderLaps()
+    {
+        LapList.Clear();
+        for (var i = _laps.Count - 1; i >= 0; i--)
+            LapList.Children.Add(new Label { Text = $"Lap {i + 1}     {_laps[i]:hh\\:mm\\:ss\\.ff}", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
     }
 }
