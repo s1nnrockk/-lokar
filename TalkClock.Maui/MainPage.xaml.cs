@@ -22,7 +22,7 @@ public partial class MainPage : ContentPage
         RestoreTimer();
         RenderAlarms();
         RenderLaps();
-        ShowTab(0);
+        GlassSwitch.IsToggled = Preferences.Get("liquid_glass", true);\n        HourFormatSwitch.IsToggled = Preferences.Get("use_24_hour", true);\n        KeepAwakeSwitch.IsToggled = Preferences.Get("keep_awake", false);\n        ApplyKeepAwake();\n        ShowTab(0);
         _uiTimer = Dispatcher.CreateTimer();
         _uiTimer.Interval = TimeSpan.FromMilliseconds(100);
         _uiTimer.Tick += (_, _) =>
@@ -60,7 +60,7 @@ public partial class MainPage : ContentPage
     {
         AlarmSection.IsVisible = tab == 1;
         TimerSection.IsVisible = tab == 2;
-        StopwatchSection.IsVisible = tab == 3;
+        StopwatchSection.IsVisible = tab == 3;\n        SettingsSection.IsVisible = tab == 4;
         // Keep the clock header visible as a compact home anchor on every tab.
         for (var i = 0; i < BottomNav.Children.Count; i++)
             if (BottomNav.Children[i] is Button b)\n            {
@@ -72,7 +72,7 @@ public partial class MainPage : ContentPage
     void OnClockTabClicked(object sender, EventArgs e) => ShowTab(0);
     void OnAlarmTabClicked(object sender, EventArgs e) => ShowTab(1);
     void OnTimerTabClicked(object sender, EventArgs e) => ShowTab(2);
-    void OnStopwatchTabClicked(object sender, EventArgs e) => ShowTab(3);
+    void OnStopwatchTabClicked(object sender, EventArgs e) => ShowTab(3);\n    void OnSettingsTabClicked(object sender, EventArgs e) => ShowTab(4);\n\n    void OnGlassToggled(object sender, ToggledEventArgs e)\n    {\n        Preferences.Set("liquid_glass", e.Value);\n        ApplyGlass();\n    }\n    void OnHourFormatToggled(object sender, ToggledEventArgs e)\n    {\n        Preferences.Set("use_24_hour", e.Value);\n        _lastClockSecond = -1;\n    }\n    void OnKeepAwakeToggled(object sender, ToggledEventArgs e)\n    {\n        Preferences.Set("keep_awake", e.Value);\n        ApplyKeepAwake();\n    }\n    void ApplyKeepAwake() => DeviceDisplay.KeepScreenOn = Preferences.Get("keep_awake", false);\n    void ApplyGlass()\n    {\n        var glass = Preferences.Get("liquid_glass", true);\n        foreach (var border in new[] { AlarmSection, TimerSection, StopwatchSection, SettingsSection })\n        {\n            border.Stroke = glass ? Color.FromArgb("#54758F") : Color.FromArgb("#2B4359");\n            border.Background = glass ? new LinearGradientBrush(new GradientStopCollection { new GradientStop(Color.FromArgb("#1B3044"), 0), new GradientStop(Color.FromArgb("#0D1927"), 1) }, new Point(0,0), new Point(1,1)) : new SolidColorBrush(Color.FromArgb("#101D2B"));\n        }\n    }
 
     List<AlarmItem> LoadAlarms()
     {
