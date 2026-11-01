@@ -12,6 +12,10 @@ A separate C#/.NET MAUI Android implementation. The original Kotlin app remains 
 - Native Android resizable home-screen clock widget with a translucent Liquid Glass gradient, live digital time/date, and tap-to-open behavior
 - Dark glass-inspired layout
 
+## Add the widget
+
+Install the APK, then long-press an empty area of the Android home screen, open **Widgets**, find **TalkClock**, and drag the clock widget onto the home screen. Resize it with the launcher handles. Tap the widget to open TalkClock.
+
 ## Build
 Install the .NET 10 SDK and MAUI Android workload:
 
