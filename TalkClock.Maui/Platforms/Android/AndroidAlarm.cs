@@ -1,7 +1,7 @@
 #if ANDROID
 using Android.App;
 using Android.Content;
-using Android.OS;
+using Android.OS;\nusing System.Text.Json;
 namespace TalkClock;
 public static class AndroidAlarm
 {
@@ -59,6 +59,26 @@ public static class AndroidAlarm
     }
     public static void Snooze(int id, string label)
         => ScheduleAt(id, label, [], DateTimeOffset.Now.AddMinutes(5).ToUnixTimeMilliseconds(), SnoozeFireAction);
+    static List<AlarmItem> LoadAlarms()
+    {
+        try
+        {
+            var raw = Context.GetSharedPreferences("talkclock_native", FileCreationMode.Private)?.GetString("alarms", "[]") ?? "[]";
+            return JsonSerializer.Deserialize<List<AlarmItem>>(raw) ?? [];
+        }
+        catch { return []; }
+    }
+    static void SaveAlarm(AlarmItem alarm)
+    {
+        var alarms = LoadAlarms();
+        alarms.RemoveAll(a => a.Id == alarm.Id);
+        alarms.Add(alarm);
+        Context.GetSharedPreferences("talkclock_native", FileCreationMode.Private)?.Edit()?.PutString("alarms", JsonSerializer.Serialize(alarms))?.Apply();
+    }
+    public static void RestoreAlarms()
+    {
+        foreach (var alarm in LoadAlarms().Where(a => a.Enabled)) Schedule(alarm);
+    }
     public static void ShowNotification(Context context, int id, string label, bool snoozable)
     {
         const string channelId = "alarms";
@@ -116,3 +136,13 @@ public class AlarmReceiver : BroadcastReceiver
     }
 }
 #endif
+[BroadcastReceiver(Enabled = true, Exported = true)]
+[IntentFilter(new[] { Intent.ActionBootCompleted })]
+public class BootReceiver : BroadcastReceiver
+{
+    public override void OnReceive(Context? context, Intent? intent)
+    {
+        if (context is not null && intent?.Action == Intent.ActionBootCompleted)
+            AndroidAlarm.RestoreAlarms();
+    }
+}
