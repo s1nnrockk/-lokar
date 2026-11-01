@@ -134,7 +134,8 @@ public partial class MainPage : ContentPage
             var time = new Label { Text = "--:--", TextColor = Colors.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.Center };
             row.Add(time, 1);
             _worldTimeLabels[id] = time;
-            var remove = new Button { Text = "×", AutomationProperties = { Name = $"Remove world clock {id}" }, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(10, 2), VerticalOptions = LayoutOptions.Center };
+            var remove = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(10, 2), VerticalOptions = LayoutOptions.Center };
+            AutomationProperties.SetName(remove, $"Remove world clock {id}");
             remove.Clicked += (_, _) =>
             {
                 _worldZones.Remove(id);
@@ -387,7 +388,8 @@ public partial class MainPage : ContentPage
             text.Children.Add(new Label { Text = alarm.Time, FontSize = 24, TextColor = Colors.White, FontAttributes = FontAttributes.Bold });
             text.Children.Add(new Label { Text = $"{alarm.Label} • {alarm.RepeatText} • {(alarm.Vibrate ? "Vibration" : "Silent")} • {(alarm.GradualVolume ? "Soft start" : "Full volume")}", FontSize = 11, TextColor = Color.FromArgb("#91A8C0") });
             row.Add(text, 0);
-            var enabled = new Switch { IsToggled = alarm.Enabled, AutomationProperties = { Name = $"Enable alarm {alarm.Label}" }, OnColor = Color.FromArgb("#A7DFFF"), VerticalOptions = LayoutOptions.Center };
+            var enabled = new Switch { IsToggled = alarm.Enabled, OnColor = Color.FromArgb("#A7DFFF"), VerticalOptions = LayoutOptions.Center };
+            AutomationProperties.SetName(enabled, $"Enable alarm {alarm.Label}");
             enabled.Toggled += (_, args) =>
             {
                 alarm.Enabled = args.Value;
@@ -397,7 +399,8 @@ public partial class MainPage : ContentPage
                 SaveAlarms();
             };
             row.Add(enabled, 1);
-            var delete = new Button { Text = "×", AutomationProperties = { Name = $"Delete alarm {alarm.Label}" }, TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(12, 4), VerticalOptions = LayoutOptions.Center };
+            var delete = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(12, 4), VerticalOptions = LayoutOptions.Center };
+            AutomationProperties.SetName(delete, $"Delete alarm {alarm.Label}");
             delete.Clicked += (_, _) =>
             {
 #if ANDROID
