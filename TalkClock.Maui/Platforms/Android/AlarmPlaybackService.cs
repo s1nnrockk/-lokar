@@ -100,7 +100,7 @@ public sealed class AlarmPlaybackService : Service
     {
         if (Build.VERSION.SdkInt < BuildVersionCodes.O) return;
         var manager = (NotificationManager?)GetSystemService(NotificationService);
-        var channel = new NotificationChannel(ChannelId, "Clokar alarm playback", NotificationImportance.Low)
+        var channel = new NotificationChannel(ChannelId, "Clokar alarm playback", NotificationImportance.High)
         {
             Description = "Ongoing alarm sound and vibration controls",
             LockscreenVisibility = NotificationVisibility.Public
