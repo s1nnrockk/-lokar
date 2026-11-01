@@ -36,7 +36,7 @@ public partial class MainPage : ContentPage
             if (now.Second != _lastClockSecond)
             {
                 _lastClockSecond = now.Second;
-                ClockLabel.Text = now.ToString("HH:mm:ss");
+                ClockLabel.Text = now.ToString(Preferences.Get("use_24_hour", true) ? "HH:mm:ss" : "h:mm:ss tt");
                 DateLabel.Text = now.ToString("dddd, MMMM d");
             }
             if (_stopwatch.IsRunning) StopwatchLabel.Text = _stopwatch.Elapsed.ToString(@"hh\:mm\:ss\.ff");
