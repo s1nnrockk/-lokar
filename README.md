@@ -1,44 +1,37 @@
-# Fossify Clock
-<img alt="Logo" src="graphics/icon.webp" width="120" />
+# Clokar
 
-<a href='https://play.google.com/store/apps/details?id=org.fossify.clock'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80/></a> <a href="https://f-droid.org/packages/org.fossify.clock/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on-en.svg" alt="Get it on F-Droid" height=80/></a> <a href="https://apt.izzysoft.de/fdroid/index/apk/org.fossify.clock"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height=80/></a>
+**Clokar** is an offline-first clock app built with .NET MAUI for Android. This branch contains the C# rewrite and its Liquid Glass-inspired interface.
 
-Introducing Fossify Clock – the ultimate timekeeping companion designed to enhance your daily routines and promote better sleep habits. With a multitude of functions tailored to your needs, Fossify Clock seamlessly integrates into your life, offering unparalleled convenience and versatility.
+## Features
 
-**⌚ MULTIFUNCTIONAL TIMEKEEPING:**  
-Experience the power of versatile time management with Fossify Clock. From serving as a clock widget to functioning as an alarm clock and stopwatch, this app is your go-to tool for regulating your daily activities and improving your overall lifestyle.
+- Live local clock with 12/24-hour formatting
+- Multiple world clocks using IANA time-zone IDs
+- Alarms with labels, repeat-day selection, enable/disable, and delete controls
+- Timer with quick presets, custom minutes/seconds, pause/resume, and Android scheduling
+- Stopwatch with persistent lap history, split-time display, and newest-first / oldest-first sorting
+- Liquid Glass appearance toggle
+- Keep-screen-awake setting
+- Android home-screen clock widget with translucent glass-style background, live time/date, resizing, and tap-to-open behavior
+- Local preferences; no account or cloud service required
 
-**⏰ FEATURE-RICH ALARM:**  
-Wake up refreshed with Fossify Clock's comprehensive alarm features. Set multiple alarms with options like day selection, vibration toggle, custom labels and ringtone customization. Enjoy gradual volume increase and a customizable snooze button for a pleasant waking experience. With a user-friendly interface, setting up alarms has never been easier.
+## Android home-screen widget
 
-**⏱️ CONVENIENT STOPWATCH:**  
-Track your activities with precision using Fossify Clock's stopwatch function. Measure longer periods or individual laps effortlessly. You can also sort your laps in ascending or descending order.
+1. Install the Clokar Android build.
+2. Long-press an empty area of your Android home screen.
+3. Open **Widgets**, find **Clokar**, and drag the clock widget onto the home screen.
+4. Resize it using the launcher's widget handles if desired.
 
-**⏳ PRECISE TIMER FUNCTIONALITY:**  
-Stay on top of your tasks with Fossify Clock's versatile timer feature. Customize ringtone preferences, toggle vibrations, and pause countdowns to suit your needs. Whether you're timing cooking intervals, managing study sessions, or ensuring timely breaks, Fossify Clock has you covered with precision and ease.
+The widget uses Android's TextClock so the displayed time updates through the system rather than relying on frequent app wakeups.
 
-**🌈 CLOCK WIDGET WITH CUSTOMIZABLE FEATURES:**  
-Transform your home screen with Fossify Clock's customizable clock widget. Adjust text color, background color, and transparency. Choose between analog or digital clock to suit your style and easily access essential time information at a glance.
+## Build
 
-**🎨 CUSTOMIZABLE INTERFACE AND THEMES:**  
-Enjoy a personalized experience with Fossify Clock's material design and dark theme options. Tailor the app to your preferences with customizable colors and themes, enhancing usability and reducing eye strain, especially in low-light environments.
+Open TalkClock.Maui/TalkClock.Maui.csproj with a compatible .NET 10 SDK and .NET MAUI Android workload, then build the net10.0-android target.
 
-**🔒 PRIVACY-FIRST APPROACH:**  
-Rest assured knowing your privacy is protected with Fossify Clock's offline operation. Experience maximum privacy, security, and stability without sacrificing functionality or convenience.
+```bash
+dotnet workload install maui-android
+dotnet build TalkClock.Maui/TalkClock.Maui.csproj -f net10.0-android
+```
 
-**🌐 AD-FREE & OPEN-SOURCE:**  
-Say goodbye to intrusive ads and unnecessary permissions. Fossify Clock is ad-free, fully open-source, and grants you complete control over your timekeeping experience.
+## Project status
 
-Upgrade your time management skills, optimize your routines, and prioritize better sleep with Fossify Clock. Download now and take control of your time like never before.
-
-➡️ Explore more Fossify apps: https://www.fossify.org<br>
-➡️ Open-Source Code: https://www.github.com/FossifyOrg<br>
-➡️ Join the community on Reddit: https://www.reddit.com/r/Fossify<br>
-➡️ Connect on Telegram: https://t.me/Fossify
-
-<div align="center">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="30%">
-</div>
-
+This is an active C# port. The original Android implementation remains in the repository for reference while feature parity and device behavior are being completed. Source updates do not by themselves mean an APK has been built or tested on a device.
