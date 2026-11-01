@@ -91,7 +91,10 @@
               <Button x:Name="StopwatchButton" Text="Start" Clicked="OnStopwatchClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16"/>
               <Button Grid.Column="1" Text="Lap" Clicked="OnLapClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="16"/>
             </Grid>
-            <Button Text="Reset stopwatch" Clicked="OnStopwatchResetClicked" BackgroundColor="#1A2B3D" TextColor="#BBD0E0" CornerRadius="16"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Button Text="Reset stopwatch" Clicked="OnStopwatchResetClicked" BackgroundColor="#1A2B3D" TextColor="#BBD0E0" CornerRadius="16"/>
+              <Button x:Name="LapSortButton" Grid.Column="1" Text="Newest first ↓" Clicked="OnLapSortClicked" BackgroundColor="#263B50" TextColor="#BBD0E0" CornerRadius="16"/>
+            </Grid>
             <VerticalStackLayout x:Name="LapList" Spacing="6"/>
           </VerticalStackLayout>
         </Border>
