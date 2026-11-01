@@ -6,7 +6,7 @@ namespace TalkClock;
 public static class AndroidAlarm
 {
     const string AlarmAction = "com.sinrok.talkclock.ALARM";
-    const string SnoozeAction = "com.sinrok.talkclock.SNOOZE_REQUEST";\n    const string SnoozeFireAction = "com.sinrok.talkclock.SNOOZE_FIRE";
+    const string SnoozeAction = "com.sinrok.talkclock.SNOOZE_REQUEST";\n    const string SnoozeFireAction = "com.sinrok.talkclock.SNOOZE_FIRE";\n    const string TimerAction = "com.sinrok.talkclock.TIMER_DONE";\n    const int TimerRequestCode = 990001;
     static Context Context => Android.App.Application.Context;
     static AlarmManager Manager => (AlarmManager?)Context.GetSystemService(Context.AlarmService)
         ?? throw new InvalidOperationException("Alarm service is unavailable.");
@@ -93,7 +93,7 @@ public class AlarmReceiver : BroadcastReceiver
         if (context is null || intent is null) return;
         var id = intent.GetIntExtra("alarm_id", 7319);
         var label = intent.GetStringExtra("alarm_label") ?? "Alarm";
-        var action = intent.Action ?? "";
+        var action = intent.Action ?? "";\n        if (action == "com.sinrok.talkclock.TIMER_DONE")\n        {\n            AndroidAlarm.ShowNotification(context, 990001, "Timer finished", false);\n            return;\n        }
         if (action == "com.sinrok.talkclock.SNOOZE")
         {
             AndroidAlarm.ShowNotification(context, id, label, false);
