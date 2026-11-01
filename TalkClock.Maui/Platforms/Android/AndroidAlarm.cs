@@ -40,9 +40,9 @@ public static class AndroidAlarm
         if (!alarm.Enabled) { Cancel(alarm.Id); return; }
         SaveAlarm(alarm);
         var target = NextOccurrence(alarm);
-        ScheduleAt(alarm.Id, alarm.Label, alarm.Days, new DateTimeOffset(target).ToUnixTimeMilliseconds(), AlarmAction);
+        ScheduleAt(alarm.Id, alarm.Label, alarm.Days, new DateTimeOffset(target).ToUnixTimeMilliseconds(), AlarmAction, alarm.Vibrate, alarm.GradualVolume);
     }
-    static void ScheduleAt(int id, string label, List<int> days, long millis, string action)
+    static void ScheduleAt(int id, string label, List<int> days, long millis, string action, bool vibrate = true, bool gradualVolume = true)
     {
         if (Build.VERSION.SdkInt >= BuildVersionCodes.S && !Manager.CanScheduleExactAlarms())
             throw new InvalidOperationException("Allow exact alarms in Android settings, then try again.");
@@ -51,6 +51,8 @@ public static class AndroidAlarm
         intent.PutExtra("alarm_id", id);
         intent.PutExtra("alarm_label", label);
         intent.PutExtra("alarm_days", string.Join(",", days));
+        intent.PutExtra("alarm_vibrate", vibrate);
+        intent.PutExtra("alarm_gradual_volume", gradualVolume);
         var wallTime = DateTimeOffset.FromUnixTimeMilliseconds(millis).LocalDateTime;
         intent.PutExtra("alarm_hour", wallTime.Hour);
         intent.PutExtra("alarm_minute", wallTime.Minute);
@@ -114,6 +116,19 @@ public static class AndroidAlarm
     {
         foreach (var alarm in LoadAlarms().Where(a => a.Enabled)) Schedule(alarm);
     }
+    public static void StopPlayback(Context context) => context.StopService(new Intent(context, typeof(AlarmPlaybackService)));
+
+    public static void StartPlayback(Context context, int id, string label, bool vibrate, bool gradualVolume)
+    {
+        var serviceIntent = new Intent(context, typeof(AlarmPlaybackService));
+        serviceIntent.PutExtra("alarm_id", id);
+        serviceIntent.PutExtra("alarm_label", label);
+        serviceIntent.PutExtra("alarm_vibrate", vibrate);
+        serviceIntent.PutExtra("alarm_gradual_volume", gradualVolume);
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.O) context.StartForegroundService(serviceIntent);
+        else context.StartService(serviceIntent);
+    }
+
     public static void ShowNotification(Context context, int id, string label, bool snoozable)
     {
         const string channelId = "alarms";
@@ -149,6 +164,11 @@ public class AlarmReceiver : BroadcastReceiver
         var id = intent.GetIntExtra("alarm_id", 7319);
         var label = intent.GetStringExtra("alarm_label") ?? "Alarm";
         var action = intent.Action ?? "";
+        if (action == "com.sinrok.talkclock.STOP_ALARM")
+        {
+            AndroidAlarm.StopPlayback(context);
+            return;
+        }
         if (action == "com.sinrok.talkclock.TIMER_DONE")
         {
             AndroidAlarm.ShowNotification(context, 990001, "Timer finished", false);
@@ -160,6 +180,9 @@ public class AlarmReceiver : BroadcastReceiver
             return;
         }
         var snoozable = action != "com.sinrok.talkclock.SNOOZE_FIRE";
+        var vibrate = intent.GetBooleanExtra("alarm_vibrate", true);
+        var gradualVolume = intent.GetBooleanExtra("alarm_gradual_volume", true);
+        AndroidAlarm.StartPlayback(context, id, label, vibrate, gradualVolume);
         AndroidAlarm.ShowNotification(context, id, label, snoozable);
         if (!snoozable) return;
         var rawDays = intent.GetStringExtra("alarm_days") ?? "";
@@ -169,7 +192,7 @@ public class AlarmReceiver : BroadcastReceiver
         {
             var hour = intent.GetIntExtra("alarm_hour", DateTime.Now.Hour);
             var minute = intent.GetIntExtra("alarm_minute", DateTime.Now.Minute);
-            var repeating = new AlarmItem { Id = id, Label = label, Days = days, Time = $"{hour:D2}:{minute:D2}" };
+            var repeating = new AlarmItem { Id = id, Label = label, Days = days, Time = $"{hour:D2}:{minute:D2}", Vibrate = vibrate, GradualVolume = gradualVolume };
             AndroidAlarm.Schedule(repeating);
         }
         else AndroidAlarm.CompleteOneShot(id);
