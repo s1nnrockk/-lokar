@@ -254,7 +254,7 @@ public partial class MainPage : ContentPage
         CreateAlarmButton.BackgroundColor = color;
         TimerButton.BackgroundColor = color;
         StopwatchButton.BackgroundColor = color;
-        foreach (var control in new Switch[] { GlassSwitch, HourFormatSwitch, SecondsSwitch, DefaultVibrateSwitch, DefaultGradualSwitch, KeepAwakeSwitch, AlarmVibrateSwitch, AlarmGradualSwitch })
+        foreach (var control in new Switch[] { GlassSwitch, HourFormatSwitch, SecondsSwitch, DefaultVibrateSwitch, DefaultGradualSwitch, KeepAwakeSwitch, AlarmVibrateSwitch, AlarmGradualSwitch, HighContrastSwitch, ReduceMotionSwitch, HapticsSwitch })
             control.OnColor = color;
         foreach (var control in new CheckBox[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 })
             control.Color = color;
@@ -326,7 +326,8 @@ public partial class MainPage : ContentPage
         var glass = Preferences.Get("liquid_glass", true);
         foreach (var border in new[] { WorldClockSection, AlarmSection, TimerSection, StopwatchSection, SettingsSection })
         {
-            border.Stroke = glass ? Color.FromArgb("#54758F") : Color.FromArgb("#2B4359");
+            var highContrast = Preferences.Get("accessibility_high_contrast", false);
+            border.Stroke = highContrast ? Color.FromArgb("#91B9D8") : glass ? Color.FromArgb("#54758F") : Color.FromArgb("#2B4359");
             var theme = Preferences.Get("clokar_theme", 0);
             var top = theme switch { 1 => "#18243A", 2 => "#292A30", _ => "#1B3044" };
             var bottom = theme switch { 1 => "#0D1422", 2 => "#17181D", _ => "#0D1927" };
