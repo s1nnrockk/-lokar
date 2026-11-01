@@ -2,7 +2,6 @@
 using Android.App;
 using Android.Animation;
 using Android.Content;
-using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
@@ -194,7 +193,11 @@ public sealed class AlarmRingingActivity : Activity
     {
         var button = new Button(this) { Text = title, TextSize = 16 };
         button.SetTextColor(Color.ParseColor(textColor));
-        button.Background = new GradientDrawable { Shape = ShapeType.Rectangle, CornerRadius = Dp(20), Color = ColorStateList.ValueOf(Color.ParseColor(fill)) };
+        var background = new GradientDrawable();
+        background.SetShape(ShapeType.Rectangle);
+        background.SetCornerRadius(Dp(20));
+        background.SetColor(Color.ParseColor(fill));
+        button.Background = background;
         return button;
     }
 
