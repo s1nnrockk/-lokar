@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TalkClock.MainPage"
+             BackgroundColor="#07111F">
+  <ScrollView>
+    <VerticalStackLayout Padding="24,28,24,36" Spacing="18">
+      <Label Text="T A L K C L O C K" TextColor="#8DD7FF" FontSize="12" FontAttributes="Bold" />
+      <Label Text="Your time,\nbeautifully." TextColor="White" FontSize="34" FontAttributes="Bold" LineHeight="1.0"/>
+      <Border Background="#142235" Stroke="#29425C" StrokeThickness="1" StrokeShape="RoundRectangle 28" Padding="22">
+        <VerticalStackLayout Spacing="8">
+          <Label Text="LOCAL TIME" TextColor="#91A8C0" FontSize="11" />
+          <Label x:Name="ClockLabel" Text="00:00:00" TextColor="White" FontSize="48" FontAttributes="Bold" HorizontalOptions="Center"/>
+          <Label x:Name="DateLabel" Text="Monday, January 1" TextColor="#91A8C0" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+      </Border>
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+        <Border Grid.Column="0" Background="#142235" Stroke="#29425C" StrokeShape="RoundRectangle 22" Padding="16">
+          <VerticalStackLayout Spacing="10">
+            <Label Text="ALARM" TextColor="#8DD7FF" FontAttributes="Bold"/>
+            <TimePicker x:Name="AlarmTimePicker" Time="07:00:00" TextColor="White" />
+            <Button Text="Set alarm" Clicked="OnSetAlarmClicked" BackgroundColor="#8DD7FF" TextColor="#07111F" CornerRadius="16"/>
+            <Label x:Name="AlarmStatus" Text="No alarm scheduled" TextColor="#91A8C0" FontSize="12"/>
+          </VerticalStackLayout>
+        </Border>
+        <Border Grid.Column="1" Background="#142235" Stroke="#29425C" StrokeShape="RoundRectangle 22" Padding="16">
+          <VerticalStackLayout Spacing="10">
+            <Label Text="TIMER" TextColor="#8DD7FF" FontAttributes="Bold"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+              <Entry x:Name="TimerMinutes" Placeholder="Min" Keyboard="Numeric" Text="5" TextColor="White" PlaceholderColor="#91A8C0"/>
+              <Entry x:Name="TimerSeconds" Grid.Column="1" Placeholder="Sec" Keyboard="Numeric" Text="0" TextColor="White" PlaceholderColor="#91A8C0"/>
+            </Grid>
+            <Button x:Name="TimerButton" Text="Start timer" Clicked="OnTimerClicked" BackgroundColor="#8DD7FF" TextColor="#07111F" CornerRadius="16"/>
+            <Label x:Name="TimerStatus" Text="Ready" TextColor="#91A8C0" FontSize="12"/>
+          </VerticalStackLayout>
+        </Border>
+      </Grid>
+      <Border Background="#142235" Stroke="#29425C" StrokeShape="RoundRectangle 22" Padding="20">
+        <VerticalStackLayout Spacing="12">
+          <Label Text="STOPWATCH" TextColor="#8DD7FF" FontAttributes="Bold"/>
+          <Label x:Name="StopwatchLabel" Text="00:00.00" TextColor="White" FontSize="38" HorizontalOptions="Center"/>
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Button x:Name="StopwatchButton" Text="Start" Clicked="OnStopwatchClicked" BackgroundColor="#8DD7FF" TextColor="#07111F" CornerRadius="16"/>
+            <Button Grid.Column="1" Text="Reset" Clicked="OnStopwatchResetClicked" BackgroundColor="#29425C" TextColor="White" CornerRadius="16"/>
+          </Grid>
+        </VerticalStackLayout>
+      </Border>
+      <Label Text="Offline • No ads • No account" TextColor="#526A83" FontSize="12" HorizontalOptions="Center"/>
+    </VerticalStackLayout>
+  </ScrollView>
+</ContentPage>
