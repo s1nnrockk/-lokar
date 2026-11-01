@@ -35,8 +35,16 @@ public partial class MainPage : ContentPage
         KeepAwakeSwitch.IsToggled = Preferences.Get("keep_awake", false);
         AlarmVibrateSwitch.IsToggled = Preferences.Get("alarm_vibrate_default", true);
         AlarmGradualSwitch.IsToggled = Preferences.Get("alarm_gradual_default", true);
+        DefaultVibrateSwitch.IsToggled = Preferences.Get("alarm_vibrate_default", true);
+        DefaultGradualSwitch.IsToggled = Preferences.Get("alarm_gradual_default", true);
+        SecondsSwitch.IsToggled = Preferences.Get("show_seconds", true);
+        ThemePicker.SelectedIndex = Math.Clamp(Preferences.Get("clokar_theme", 0), 0, 2);
+        AccentPicker.SelectedIndex = Math.Clamp(Preferences.Get("clokar_accent", 0), 0, 5);
+        SnoozePicker.SelectedIndex = Math.Clamp(Preferences.Get("alarm_snooze_minutes", 5) switch { 10 => 1, 15 => 2, 20 => 3, _ => 0 }, 0, 3);
         ApplyKeepAwake();
         ApplyGlass();
+        ApplyTheme();
+        ApplyAccent();
         ShowTab(0);
         _uiTimer = Dispatcher.CreateTimer();
         _uiTimer.Interval = TimeSpan.FromMilliseconds(100);
@@ -46,7 +54,7 @@ public partial class MainPage : ContentPage
             if (now.Second != _lastClockSecond)
             {
                 _lastClockSecond = now.Second;
-                ClockLabel.Text = now.ToString(Preferences.Get("use_24_hour", true) ? "HH:mm:ss" : "h:mm:ss tt");
+                ClockLabel.Text = now.ToString(ClockFormat());
                 DateLabel.Text = now.ToString("dddd, MMMM d");
                 UpdateWorldClockLabels(now);
             }
@@ -140,7 +148,7 @@ public partial class MainPage : ContentPage
     {
         foreach (var id in _worldZones)
             if (_worldTimeLabels.TryGetValue(id, out var label) && TryGetTimeZone(id, out var zone))
-                label.Text = TimeZoneInfo.ConvertTime(localNow, zone).ToString(Preferences.Get("use_24_hour", true) ? "HH:mm:ss" : "h:mm:ss tt");
+                label.Text = TimeZoneInfo.ConvertTime(localNow, zone).ToString(ClockFormat());
     }
 
     void ShowTab(int tab)
@@ -174,6 +182,73 @@ public partial class MainPage : ContentPage
     {
         Preferences.Set("use_24_hour", e.Value);
         _lastClockSecond = -1;
+        UpdateWorldClockLabels(DateTime.Now);
+    }
+    string ClockFormat()
+    {
+        var use24 = Preferences.Get("use_24_hour", true);
+        var seconds = Preferences.Get("show_seconds", true);
+        return (use24 ? "HH:mm" : "h:mm") + (seconds ? ":ss" : "") + (use24 ? "" : " tt");
+    }
+    void OnSecondsToggled(object sender, ToggledEventArgs e)
+    {
+        Preferences.Set("show_seconds", e.Value);
+        _lastClockSecond = -1;
+        ClockLabel.Text = DateTime.Now.ToString(ClockFormat());
+        UpdateWorldClockLabels(DateTime.Now);
+    }
+    void OnDefaultVibrateToggled(object sender, ToggledEventArgs e)
+    {
+        Preferences.Set("alarm_vibrate_default", e.Value);
+        if (AlarmVibrateSwitch is not null) AlarmVibrateSwitch.IsToggled = e.Value;
+    }
+    void OnDefaultGradualToggled(object sender, ToggledEventArgs e)
+    {
+        Preferences.Set("alarm_gradual_default", e.Value);
+        if (AlarmGradualSwitch is not null) AlarmGradualSwitch.IsToggled = e.Value;
+    }
+    void OnSnoozeChanged(object sender, EventArgs e)
+    {
+        var minutes = SnoozePicker.SelectedIndex switch { 1 => 10, 2 => 15, 3 => 20, _ => 5 };
+        Preferences.Set("alarm_snooze_minutes", minutes);
+    }
+    void OnThemeChanged(object sender, EventArgs e)
+    {
+        if (ThemePicker.SelectedIndex < 0) return;
+        Preferences.Set("clokar_theme", ThemePicker.SelectedIndex);
+        ApplyTheme();
+    }
+    void OnAccentChanged(object sender, EventArgs e)
+    {
+        if (AccentPicker.SelectedIndex < 0) return;
+        Preferences.Set("clokar_accent", AccentPicker.SelectedIndex);
+        ApplyAccent();
+    }
+    void ApplyTheme()
+    {
+        var theme = Preferences.Get("clokar_theme", 0);
+        var page = theme switch { 1 => "#050812", 2 => "#101114", _ => "#070D18" };
+        BackgroundColor = Color.FromArgb(page);
+        var panel = theme switch { 1 => "#0D1422", 2 => "#1A1B20", _ => "#101D2B" };
+        foreach (var border in new[] { WorldClockSection, AlarmSection, TimerSection, StopwatchSection, SettingsSection })
+            border.Background = new SolidColorBrush(Color.FromArgb(panel));
+    }
+    void ApplyAccent()
+    {
+        var accent = Preferences.Get("clokar_accent", 0) switch
+        {
+            1 => "#B9A2FF", 2 => "#8DE6C0", 3 => "#FF9DB5",
+            4 => "#FFC978", 5 => "#9BE7F2", _ => "#A7DFFF"
+        };
+        var color = Color.FromArgb(accent);
+        ClockLabel.TextColor = color;
+        foreach (var control in new Switch[] { GlassSwitch, HourFormatSwitch, SecondsSwitch, DefaultVibrateSwitch, DefaultGradualSwitch, KeepAwakeSwitch, AlarmVibrateSwitch, AlarmGradualSwitch })
+            control.OnColor = color;
+        foreach (var control in new CheckBox[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 })
+            control.Color = color;
+        foreach (var child in BottomNav.Children)
+            if (child is Button button && button.Text.Contains("Clock", StringComparison.Ordinal))
+                button.TextColor = color;
     }
     void OnKeepAwakeToggled(object sender, ToggledEventArgs e)
     {
@@ -187,7 +262,7 @@ public partial class MainPage : ContentPage
         foreach (var border in new[] { WorldClockSection, AlarmSection, TimerSection, StopwatchSection, SettingsSection })
         {
             border.Stroke = glass ? Color.FromArgb("#54758F") : Color.FromArgb("#2B4359");
-            border.Background = glass ? new LinearGradientBrush(new GradientStopCollection { new GradientStop(Color.FromArgb("#1B3044"), 0), new GradientStop(Color.FromArgb("#0D1927"), 1) }, new Point(0,0), new Point(1,1)) : new SolidColorBrush(Color.FromArgb("#101D2B"));
+            if (glass) border.Background = new LinearGradientBrush(new GradientStopCollection { new GradientStop(Color.FromArgb("#1B3044"), 0), new GradientStop(Color.FromArgb("#0D1927"), 1) }, new Point(0,0), new Point(1,1));
         }
     }
 
@@ -202,6 +277,8 @@ public partial class MainPage : ContentPage
     {
         Preferences.Set("alarm_vibrate_default", AlarmVibrateSwitch.IsToggled);
         Preferences.Set("alarm_gradual_default", AlarmGradualSwitch.IsToggled);
+        DefaultVibrateSwitch.IsToggled = AlarmVibrateSwitch.IsToggled;
+        DefaultGradualSwitch.IsToggled = AlarmGradualSwitch.IsToggled;
         var days = new[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 }
             .Select((c, i) => (c.IsChecked, i)).Where(x => x.IsChecked).Select(x => x.i).ToList();
         var alarm = new AlarmItem
