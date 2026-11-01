@@ -51,6 +51,14 @@
               <TimePicker x:Name="AlarmTimePicker" Time="07:00:00" TextColor="White" />
               <Entry x:Name="AlarmLabelEntry" Grid.Column="1" Placeholder="Alarm label" Text="Alarm" TextColor="White" PlaceholderColor="#829AAF"/>
             </Grid>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <Label Text="Vibration" TextColor="#DCEAF5" VerticalOptions="Center"/>
+              <Switch x:Name="AlarmVibrateSwitch" Grid.Column="1" IsToggled="True" OnColor="#A7DFFF"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <Label Text="Gradually increase volume" TextColor="#DCEAF5" VerticalOptions="Center"/>
+              <Switch x:Name="AlarmGradualSwitch" Grid.Column="1" IsToggled="True" OnColor="#A7DFFF"/>
+            </Grid>
             <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="2">
               <VerticalStackLayout><CheckBox x:Name="Day0" Color="#9BDFFF"/><Label Text="Su" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
               <VerticalStackLayout Grid.Column="1"><CheckBox x:Name="Day1" Color="#9BDFFF"/><Label Text="Mo" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
