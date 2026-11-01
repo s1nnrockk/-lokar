@@ -6,7 +6,7 @@ namespace TalkClock;
 public static class AndroidAlarm
 {
     const string AlarmAction = "com.sinrok.talkclock.ALARM";
-    const string SnoozeAction = "com.sinrok.talkclock.SNOOZE";
+    const string SnoozeAction = "com.sinrok.talkclock.SNOOZE_REQUEST";\n    const string SnoozeFireAction = "com.sinrok.talkclock.SNOOZE_FIRE";
     static Context Context => Android.App.Application.Context;
     static AlarmManager Manager => (AlarmManager?)Context.GetSystemService(Context.AlarmService)
         ?? throw new InvalidOperationException("Alarm service is unavailable.");
@@ -44,7 +44,7 @@ public static class AndroidAlarm
         intent.SetAction(action);
         intent.PutExtra("alarm_id", id);
         intent.PutExtra("alarm_label", label);
-        intent.PutExtra("alarm_days", string.Join(",", days));
+        intent.PutExtra("alarm_days", string.Join(",", days));\n        var wallTime = DateTimeOffset.FromUnixTimeMilliseconds(millis).LocalDateTime;\n        intent.PutExtra("alarm_hour", wallTime.Hour);\n        intent.PutExtra("alarm_minute", wallTime.Minute);
         var pending = PendingIntent.GetBroadcast(Context, id, intent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
         if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
             Manager.SetExactAndAllowWhileIdle(AlarmType.RtcWakeup, millis, pending);
@@ -58,7 +58,7 @@ public static class AndroidAlarm
         if (pending is not null) { Manager.Cancel(pending); pending.Cancel(); }
     }
     public static void Snooze(int id, string label)
-        => ScheduleAt(id, label, [], DateTimeOffset.Now.AddMinutes(5).ToUnixTimeMilliseconds(), SnoozeAction);
+        => ScheduleAt(id, label, [], DateTimeOffset.Now.AddMinutes(5).ToUnixTimeMilliseconds(), SnoozeFireAction);
     public static void ShowNotification(Context context, int id, string label, bool snoozable)
     {
         const string channelId = "alarms";
