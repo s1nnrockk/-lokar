@@ -93,6 +93,21 @@
                 android:layout_height="wrap_content"/>
 
             <RelativeLayout
+                android:id="@+id/settings_liquid_glass_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_liquid_glass"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/liquid_glass_effect" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/settings_use_english_holder"
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
