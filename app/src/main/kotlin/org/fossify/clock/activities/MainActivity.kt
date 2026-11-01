@@ -326,8 +326,7 @@ class MainActivity : SimpleActivity() {
         }
 
         binding.mainTabsHolder.getTabAt(binding.viewPager.currentItem)?.select()
-        val bottomBarColor = getBottomNavigationBackgroundColor()
-        binding.mainTabsHolder.setBackgroundColor(bottomBarColor)
+        binding.mainTabsHolder.setBackgroundResource(R.drawable.glass_bottom_bar_background)
     }
 
     private fun getInactiveTabIndexes(activeIndex: Int): List<Int> {
