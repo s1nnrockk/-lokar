@@ -78,7 +78,7 @@
       </VerticalStackLayout>
     </ScrollView>
     <Border Grid.Row="1" Background="#0C1724" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 22" Margin="14,0,14,12" Padding="6">
-      <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="4">
+      <Grid x:Name="BottomNav" ColumnDefinitions="*,*,*,*" ColumnSpacing="4">
         <Button Text="◷\nClock" Clicked="OnClockTabClicked" BackgroundColor="#1B3044" TextColor="#A7DFFF" CornerRadius="16" FontSize="11"/>
         <Button Grid.Column="1" Text="◉\nAlarm" Clicked="OnAlarmTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
         <Button Grid.Column="2" Text="⌛\nTimer" Clicked="OnTimerTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="16" FontSize="11"/>
