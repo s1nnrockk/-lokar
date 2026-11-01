@@ -41,6 +41,7 @@ const val WAS_INITIAL_WIDGET_SET_UP = "was_initial_widget_set_up"
 const val DATA_EXPORT_EXTENSION = ".json"
 const val LAST_DATA_EXPORT_PATH = "last_alarms_export_path"
 const val MIGRATE_FIRST_DAY_OF_WEEK = "migrate_first_day_of_week"
+const val LIQUID_GLASS = "liquid_glass"
 
 const val TABS_COUNT = 4
 const val EDITED_TIME_ZONE_SEPARATOR = ":"
@@ -72,8 +73,8 @@ const val TAB_STOPWATCH = 4
 const val TAB_TIMER = 8
 const val TAB_CLOCK_INDEX = 0
 const val TAB_ALARM_INDEX = 1
-const val TAB_STOPWATCH_INDEX = 2
-const val TAB_TIMER_INDEX = 3
+const val TAB_STOPWATCH_INDEX = 3
+const val TAB_TIMER_INDEX = 2
 
 const val TIMER_ID = "timer_id"
 const val INVALID_TIMER_ID = -1
