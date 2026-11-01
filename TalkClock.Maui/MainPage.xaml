@@ -205,11 +205,11 @@
     </ScrollView>
     <Border Grid.Row="1" Background="#0D1927" Stroke="#29445C" StrokeThickness="1" StrokeShape="RoundRectangle 24" Margin="14,0,14,12" Padding="5">
       <Grid x:Name="BottomNav" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="2">
-        <Button Text="◷\nClock" Clicked="OnClockTabClicked" BackgroundColor="#1B3044" TextColor="#A7DFFF" CornerRadius="17" FontSize="10" Padding="2,8"/>
-        <Button Grid.Column="1" Text="◉\nAlarm" Clicked="OnAlarmTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
-        <Button Grid.Column="2" Text="⌛\nTimer" Clicked="OnTimerTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
-        <Button Grid.Column="3" Text="◴\nWatch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
-        <Button Grid.Column="4" Text="⚙\nMore" Clicked="OnSettingsTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button AutomationProperties.Name="Open clock and world clocks" Text="◷\nClock" Clicked="OnClockTabClicked" BackgroundColor="#1B3044" TextColor="#A7DFFF" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="1" AutomationProperties.Name="Open alarms" Text="◉\nAlarm" Clicked="OnAlarmTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="2" AutomationProperties.Name="Open timer" Text="⌛\nTimer" Clicked="OnTimerTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="3" AutomationProperties.Name="Open stopwatch" Text="◴\nWatch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="4" AutomationProperties.Name="Open settings" Text="⚙\nMore" Clicked="OnSettingsTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
       </Grid>
     </Border>
   </Grid>
