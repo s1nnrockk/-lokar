@@ -188,6 +188,8 @@ public class AlarmReceiver : BroadcastReceiver
             var snoozeVibrate = intent.GetBooleanExtra("alarm_vibrate", true);
             var snoozeGradual = intent.GetBooleanExtra("alarm_gradual_volume", true);
             AndroidAlarm.StopPlayback(context);
+            var notifications = (NotificationManager?)context.GetSystemService(Context.NotificationService);
+            notifications?.Cancel(id);
             AndroidAlarm.Snooze(id, label, snoozeVibrate, snoozeGradual);
             return;
         }
