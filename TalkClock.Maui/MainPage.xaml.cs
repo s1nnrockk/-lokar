@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.Json;
-using Microsoft.Maui.Dispatching;
 namespace TalkClock;
 public partial class MainPage : ContentPage
 {
@@ -13,21 +12,29 @@ public partial class MainPage : ContentPage
     DateTime _timerEnd;
     TimeSpan _timerRemaining;
     bool _timerRunning;
+    int _lastClockSecond = -1;
+
     public MainPage()
     {
         InitializeComponent();
         _alarms = LoadAlarms();
         LoadLaps();
+        RestoreTimer();
         RenderAlarms();
         RenderLaps();
+        ShowTab(0);
         _uiTimer = Dispatcher.CreateTimer();
         _uiTimer.Interval = TimeSpan.FromMilliseconds(100);
         _uiTimer.Tick += (_, _) =>
         {
             var now = DateTime.Now;
-            ClockLabel.Text = now.ToString("HH:mm:ss");
-            DateLabel.Text = now.ToString("dddd, MMMM d");
-            StopwatchLabel.Text = _stopwatch.Elapsed.ToString(@"hh\:mm\:ss\.ff");
+            if (now.Second != _lastClockSecond)
+            {
+                _lastClockSecond = now.Second;
+                ClockLabel.Text = now.ToString("HH:mm:ss");
+                DateLabel.Text = now.ToString("dddd, MMMM d");
+            }
+            if (_stopwatch.IsRunning) StopwatchLabel.Text = _stopwatch.Elapsed.ToString(@"hh\:mm\:ss\.ff");
             if (_timerRunning)
             {
                 _timerRemaining = _timerEnd - now;
@@ -35,8 +42,12 @@ public partial class MainPage : ContentPage
                 {
                     _timerRunning = false;
                     _timerRemaining = TimeSpan.Zero;
-                    TimerStatus.Text = "Finished";
+                    TimerStatus.Text = "00:00:00";
                     TimerButton.Text = "Start timer";
+                    Preferences.Remove("timer_end_utc");
+#if ANDROID
+                    AndroidAlarm.CancelTimer();
+#endif
                     MainThread.BeginInvokeOnMainThread(async () => await DisplayAlert("Timer", "Your timer has finished.", "OK"));
                 }
                 else TimerStatus.Text = _timerRemaining.ToString(@"hh\:mm\:ss");
@@ -44,12 +55,35 @@ public partial class MainPage : ContentPage
         };
         _uiTimer.Start();
     }
+
+    void ShowTab(int tab)
+    {
+        AlarmSection.IsVisible = tab == 1;
+        TimerSection.IsVisible = tab == 2;
+        StopwatchSection.IsVisible = tab == 3;
+        // Keep the clock header visible as a compact home anchor on every tab.
+        var buttons = new[] { "◷\nClock", "◉\nAlarm", "⌛\nTimer", "◴\nStopwatch" };
+        var nav = (Grid)((Border)((Grid)Content).Children[1]).Content;
+        for (var i = 0; i < nav.Children.Count; i++)
+            if (nav.Children[i] is Button b)
+            {
+                b.BackgroundColor = i == tab ? Color.FromArgb("#1B3044") : Colors.Transparent;
+                b.TextColor = i == tab ? Color.FromArgb("#A7DFFF") : Color.FromArgb("#91A8BC");
+            }
+        if (tab == 0) { AlarmSection.IsVisible = false; TimerSection.IsVisible = false; StopwatchSection.IsVisible = false; }
+    }
+    void OnClockTabClicked(object sender, EventArgs e) => ShowTab(0);
+    void OnAlarmTabClicked(object sender, EventArgs e) => ShowTab(1);
+    void OnTimerTabClicked(object sender, EventArgs e) => ShowTab(2);
+    void OnStopwatchTabClicked(object sender, EventArgs e) => ShowTab(3);
+
     List<AlarmItem> LoadAlarms()
     {
         try { return JsonSerializer.Deserialize<List<AlarmItem>>(Preferences.Get(AlarmsKey, "[]")) ?? []; }
         catch { return []; }
     }
     void SaveAlarms() => Preferences.Set(AlarmsKey, JsonSerializer.Serialize(_alarms));
+
     async void OnSetAlarmClicked(object sender, EventArgs e)
     {
         var days = new[] { Day0, Day1, Day2, Day3, Day4, Day5, Day6 }
@@ -77,17 +111,18 @@ public partial class MainPage : ContentPage
         await DisplayAlert("Alarm", "Alarm saved. Android is required to schedule system alarms.", "OK");
 #endif
     }
+
     void RenderAlarms()
     {
         AlarmList.Clear();
         foreach (var alarm in _alarms.OrderBy(a => a.Time))
         {
-            var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, Padding = 10, BackgroundColor = Color.FromArgb("#0D1B2B") };
+            var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, Padding = 10 };
             var text = new VerticalStackLayout { Spacing = 2 };
             text.Children.Add(new Label { Text = alarm.Time, FontSize = 24, TextColor = Colors.White, FontAttributes = FontAttributes.Bold });
             text.Children.Add(new Label { Text = $"{alarm.Label} • {alarm.RepeatText}", FontSize = 12, TextColor = Color.FromArgb("#91A8C0") });
             row.Add(text, 0);
-            var enabled = new Switch { IsToggled = alarm.Enabled, OnColor = Color.FromArgb("#8DD7FF"), VerticalOptions = LayoutOptions.Center };
+            var enabled = new Switch { IsToggled = alarm.Enabled, OnColor = Color.FromArgb("#A7DFFF"), VerticalOptions = LayoutOptions.Center };
             enabled.Toggled += (_, args) =>
             {
                 alarm.Enabled = args.Value;
@@ -97,7 +132,7 @@ public partial class MainPage : ContentPage
                 SaveAlarms();
             };
             row.Add(enabled, 1);
-            var delete = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#29425C"), Padding = new Thickness(12, 4), VerticalOptions = LayoutOptions.Center };
+            var delete = new Button { Text = "×", TextColor = Colors.White, BackgroundColor = Color.FromArgb("#263B50"), Padding = new Thickness(12, 4), VerticalOptions = LayoutOptions.Center };
             delete.Clicked += (_, _) =>
             {
 #if ANDROID
@@ -106,10 +141,11 @@ public partial class MainPage : ContentPage
                 _alarms.Remove(alarm); SaveAlarms(); RenderAlarms();
             };
             row.Add(delete, 2);
-            AlarmList.Children.Add(new Border { Stroke = Color.FromArgb("#29425C"), StrokeShape = new RoundRectangle(16), Padding = 2, Content = row });
+            AlarmList.Children.Add(new Border { Stroke = Color.FromArgb("#2B4359"), StrokeShape = new RoundRectangle(16), Padding = 2, Content = row });
         }
         if (_alarms.Count == 0) AlarmList.Children.Add(new Label { Text = "No alarms yet", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
     }
+
     void RestoreTimer()
     {
         var raw = Preferences.Get("timer_end_utc", "");
@@ -125,6 +161,7 @@ public partial class MainPage : ContentPage
             else Preferences.Remove("timer_end_utc");
         }
     }
+
     void OnTimerClicked(object sender, EventArgs e)
     {
         if (_timerRunning)
@@ -154,6 +191,7 @@ public partial class MainPage : ContentPage
         catch (Exception ex) { MainThread.BeginInvokeOnMainThread(async () => await DisplayAlert("Timer scheduling", ex.Message, "OK")); }
 #endif
     }
+
     void OnStopwatchClicked(object sender, EventArgs e)
     {
         if (_stopwatch.IsRunning) { _stopwatch.Stop(); StopwatchButton.Text = "Resume"; }
@@ -162,7 +200,7 @@ public partial class MainPage : ContentPage
     void OnStopwatchResetClicked(object sender, EventArgs e)
     {
         _stopwatch.Reset(); _laps.Clear(); SaveLaps(); RenderLaps();
-        StopwatchLabel.Text = "00:00.00"; StopwatchButton.Text = "Start";
+        StopwatchLabel.Text = "00:00:00.00"; StopwatchButton.Text = "Start";
     }
     void OnLapClicked(object sender, EventArgs e)
     {
@@ -178,6 +216,6 @@ public partial class MainPage : ContentPage
     {
         LapList.Clear();
         for (var i = _laps.Count - 1; i >= 0; i--)
-            LapList.Children.Add(new Label { Text = $"Lap {i + 1}     {_laps[i]:hh\\:mm\\:ss\\.ff}", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
+            LapList.Children.Add(new Label { Text = $"Lap {i + 1}     {_laps[i]:hh\:mm\:ss\.ff}", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
     }
 }
