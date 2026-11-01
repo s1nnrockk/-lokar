@@ -10,7 +10,7 @@ namespace TalkClock;
 public sealed class AlarmPlaybackService : Service
 {
     const int NotificationId = 992001;
-    const string ChannelId = "clokar_alarm_playback_silent";
+    const string ChannelId = "clokar_alarm_playback_fullscreen";
     Handler? _handler;
     MediaPlayer? _player;
     Vibrator? _vibrator;
