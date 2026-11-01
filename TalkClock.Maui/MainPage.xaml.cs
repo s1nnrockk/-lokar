@@ -140,6 +140,7 @@ public partial class MainPage : ContentPage
 
     void ShowTab(int tab)
     {
+        WorldClockSection.IsVisible = tab == 0;
         AlarmSection.IsVisible = tab == 1;
         TimerSection.IsVisible = tab == 2;
         StopwatchSection.IsVisible = tab == 3;
@@ -178,7 +179,7 @@ public partial class MainPage : ContentPage
     void ApplyGlass()
     {
         var glass = Preferences.Get("liquid_glass", true);
-        foreach (var border in new[] { AlarmSection, TimerSection, StopwatchSection, SettingsSection })
+        foreach (var border in new[] { WorldClockSection, AlarmSection, TimerSection, StopwatchSection, SettingsSection })
         {
             border.Stroke = glass ? Color.FromArgb("#54758F") : Color.FromArgb("#2B4359");
             border.Background = glass ? new LinearGradientBrush(new GradientStopCollection { new GradientStop(Color.FromArgb("#1B3044"), 0), new GradientStop(Color.FromArgb("#0D1927"), 1) }, new Point(0,0), new Point(1,1)) : new SolidColorBrush(Color.FromArgb("#101D2B"));
