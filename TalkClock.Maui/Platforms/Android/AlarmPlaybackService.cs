@@ -10,7 +10,7 @@ namespace TalkClock;
 public sealed class AlarmPlaybackService : Service
 {
     const int NotificationId = 992001;
-    const string ChannelId = "clokar_alarm_playback";
+    const string ChannelId = "clokar_alarm_playback_silent";
     Handler? _handler;
     MediaPlayer? _player;
     Vibrator? _vibrator;
@@ -87,11 +87,13 @@ public sealed class AlarmPlaybackService : Service
     {
         if (Build.VERSION.SdkInt < BuildVersionCodes.O) return;
         var manager = (NotificationManager?)GetSystemService(NotificationService);
-        manager?.CreateNotificationChannel(new NotificationChannel(ChannelId, "Clokar alarm playback", NotificationImportance.High)
+        var channel = new NotificationChannel(ChannelId, "Clokar alarm playback", NotificationImportance.Low)
         {
             Description = "Ongoing alarm sound and vibration controls",
             LockscreenVisibility = NotificationVisibility.Public
-        });
+        };
+        channel.SetSound(null, null);
+        manager?.CreateNotificationChannel(channel);
     }
 
     void ScheduleVolumeStep()
