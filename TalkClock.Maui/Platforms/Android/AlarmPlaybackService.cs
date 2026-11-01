@@ -52,6 +52,7 @@ public sealed class AlarmPlaybackService : Service
             .SetOngoing(true)
             .SetCategory(Notification.CategoryAlarm)
             .SetPriority((int)NotificationPriority.Max)
+            .SetContentIntent(fullScreenPending)
             .SetFullScreenIntent(fullScreenPending, true)
             .AddAction(new Notification.Action.Builder(null, "Dismiss", stopPending).Build())
             .Build();
