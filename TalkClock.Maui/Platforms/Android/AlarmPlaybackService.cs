@@ -34,7 +34,10 @@ public sealed class AlarmPlaybackService : Service
         stopIntent.PutExtra("alarm_id", intent?.GetIntExtra("alarm_id", 7319) ?? 7319);
         var stopPending = PendingIntent.GetBroadcast(this, NotificationId, stopIntent,
             PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
-        var notification = new Notification.Builder(this, ChannelId)
+        var notificationBuilder = Build.VERSION.SdkInt >= BuildVersionCodes.O
+            ? new Notification.Builder(this, ChannelId)
+            : new Notification.Builder(this);
+        var notification = notificationBuilder
             .SetContentTitle(string.IsNullOrWhiteSpace(label) ? "Clokar alarm" : label)
             .SetContentText("Alarm is ringing")
             .SetSmallIcon(Android.Resource.Drawable.IcLockIdleAlarm)
@@ -51,6 +54,7 @@ public sealed class AlarmPlaybackService : Service
             if (alarmUri is not null)
             {
                 _player = new MediaPlayer();
+                _player.SetWakeMode(this, WakeMode.Partial);
                 _player.SetDataSource(this, alarmUri);
                 _player.SetAudioAttributes(new AudioAttributes.Builder()
                     .SetUsage(AudioUsageKind.Alarm)
