@@ -205,7 +205,9 @@ public partial class MainPage : ContentPage
             Id = _alarms.Count == 0 ? 1 : _alarms.Max(a => a.Id) + 1,
             Time = AlarmTimePicker.Time.ToString(@"hh\:mm"),
             Label = string.IsNullOrWhiteSpace(AlarmLabelEntry.Text) ? "Alarm" : AlarmLabelEntry.Text.Trim(),
-            Days = days
+            Days = days,
+            Vibrate = AlarmVibrateSwitch.IsToggled,
+            GradualVolume = AlarmGradualSwitch.IsToggled
         };
 #if ANDROID
         try
@@ -232,7 +234,7 @@ public partial class MainPage : ContentPage
             var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto), new ColumnDefinition(GridLength.Auto) }, Padding = 10 };
             var text = new VerticalStackLayout { Spacing = 2 };
             text.Children.Add(new Label { Text = alarm.Time, FontSize = 24, TextColor = Colors.White, FontAttributes = FontAttributes.Bold });
-            text.Children.Add(new Label { Text = $"{alarm.Label} • {alarm.RepeatText}", FontSize = 12, TextColor = Color.FromArgb("#91A8C0") });
+            text.Children.Add(new Label { Text = $"{alarm.Label} • {alarm.RepeatText} • {(alarm.Vibrate ? "Vibration" : "Silent")} • {(alarm.GradualVolume ? "Soft start" : "Full volume")}", FontSize = 11, TextColor = Color.FromArgb("#91A8C0") });
             row.Add(text, 0);
             var enabled = new Switch { IsToggled = alarm.Enabled, OnColor = Color.FromArgb("#A7DFFF"), VerticalOptions = LayoutOptions.Center };
             enabled.Toggled += (_, args) =>
