@@ -363,4 +363,5 @@ public partial class MainPage : ContentPage
             LapList.Children.Add(new Border { Stroke = Color.FromArgb("#2B4359"), StrokeShape = new RoundRectangle(12), Padding = 2, Content = row });
         }
         if (_laps.Count == 0) LapList.Children.Add(new Label { Text = "Your lap times will appear here.", TextColor = Color.FromArgb("#829AAF"), FontSize = 12 });
-    }}
+    }
+}
