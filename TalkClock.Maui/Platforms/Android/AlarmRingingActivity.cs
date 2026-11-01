@@ -2,6 +2,7 @@
 using Android.App;
 using Android.Animation;
 using Android.Content;
+using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
@@ -15,9 +16,6 @@ namespace TalkClock;
     LaunchMode = Android.Content.PM.LaunchMode.SingleTop)]
 public sealed class AlarmRingingActivity : Activity
 {
-    const string StopAction = "com.sinrok.talkclock.STOP_ALARM";
-    const string SnoozeAction = "com.sinrok.talkclock.SNOOZE_REQUEST";
-    const int NotificationBase = 992001;
     Handler? _handler;
     TextView? _clock;
     TextView? _date;
