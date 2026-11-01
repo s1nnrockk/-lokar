@@ -56,6 +56,7 @@
     <string name="increase_volume_gradually">Increase volume gradually</string>
     <string name="settings_import_data">Import alarms and timers</string>
     <string name="settings_export_data">Export alarms and timers</string>
+    <string name="liquid_glass_effect">Liquid Glass interface</string>
 
     <!-- FAQ -->
     <string name="faq_1_title">How can I change lap sorting at the stopwatch tab?</string>
