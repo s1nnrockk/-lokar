@@ -270,6 +270,21 @@ public partial class MainPage : ContentPage
         }
     }
 
+    void OnTimerPresetClicked(object sender, EventArgs e)
+    {
+        if (sender is not Button button) return;
+        var value = button.Text.TrimEnd('m');
+        if (!int.TryParse(value, out var minutes)) return;
+        TimerMinutes.Text = minutes.ToString();
+        TimerSeconds.Text = "0";
+        if (!_timerRunning)
+        {
+            _timerRemaining = TimeSpan.FromMinutes(minutes);
+            TimerStatus.Text = _timerRemaining.ToString(@"hh\:mm\:ss");
+            TimerButton.Text = "Start timer";
+        }
+    }
+
     void OnTimerClicked(object sender, EventArgs e)
     {
         if (_timerRunning)
