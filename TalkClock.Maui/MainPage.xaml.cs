@@ -62,7 +62,8 @@ public partial class MainPage : ContentPage
         TimerSection.IsVisible = tab == 2;
         StopwatchSection.IsVisible = tab == 3;
         // Keep the clock header visible as a compact home anchor on every tab.
-        for (var i = 0; i < BottomNav.Children.Count; i++)\n            if (BottomNav.Children[i] is Button b)\n            {
+        for (var i = 0; i < BottomNav.Children.Count; i++)
+            if (BottomNav.Children[i] is Button b)\n            {
                 b.BackgroundColor = i == tab ? Color.FromArgb("#1B3044") : Colors.Transparent;
                 b.TextColor = i == tab ? Color.FromArgb("#A7DFFF") : Color.FromArgb("#91A8BC");
             }
