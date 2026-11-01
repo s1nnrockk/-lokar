@@ -8,6 +8,7 @@
 - Multiple world clocks using IANA time-zone IDs
 - Alarms with labels, repeat-day selection, enable/disable, and delete controls
 - Per-alarm vibration toggle and a 30-second gradual alarm-volume ramp
+- Animated full-screen alarm screen with live time, pulsing glass rings, Snooze, and Dismiss controls
 - Alarm playback continues through a foreground service and can be dismissed or snoozed from notifications
 - Timer with quick presets, custom minutes/seconds, pause/resume, and Android scheduling
 - Stopwatch with persistent lap history, split-time display, and newest-first / oldest-first sorting
