@@ -10,6 +10,7 @@ public partial class MainPage : ContentPage
     readonly Dictionary<string, Label> _worldTimeLabels = new(StringComparer.OrdinalIgnoreCase);
     readonly Stopwatch _stopwatch = new();
     readonly List<TimeSpan> _laps = [];
+    bool _lapsOldestFirst;
     List<AlarmItem> _alarms = [];
     IDispatcherTimer? _uiTimer;
     DateTime _timerEnd;
@@ -22,11 +23,13 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         _alarms = LoadAlarms();
         LoadLaps();
+        _lapsOldestFirst = Preferences.Get("laps_oldest_first", false);
         LoadWorldClocks();
         RenderWorldClocks();
         RestoreTimer();
         RenderAlarms();
         RenderLaps();
+        UpdateLapSortButton();
         GlassSwitch.IsToggled = Preferences.Get("liquid_glass", true);
         HourFormatSwitch.IsToggled = Preferences.Get("use_24_hour", true);
         KeepAwakeSwitch.IsToggled = Preferences.Get("keep_awake", false);
@@ -336,10 +339,28 @@ public partial class MainPage : ContentPage
         try { _laps.AddRange(JsonSerializer.Deserialize<List<TimeSpan>>(Preferences.Get(LapsKey, "[]")) ?? []); } catch { }
     }
     void SaveLaps() => Preferences.Set(LapsKey, JsonSerializer.Serialize(_laps));
+    void OnLapSortClicked(object sender, EventArgs e)
+    {
+        _lapsOldestFirst = !_lapsOldestFirst;
+        Preferences.Set("laps_oldest_first", _lapsOldestFirst);
+        UpdateLapSortButton();
+        RenderLaps();
+    }
+
+    void UpdateLapSortButton() => LapSortButton.Text = _lapsOldestFirst ? "Oldest first ↑" : "Newest first ↓";
+
     void RenderLaps()
     {
         LapList.Clear();
-        for (var i = _laps.Count - 1; i >= 0; i--)
-            LapList.Children.Add(new Label { Text = $"Lap {i + 1}     {_laps[i].ToString(@"hh\:mm\:ss\.ff")}", TextColor = Color.FromArgb("#91A8C0"), FontSize = 12 });
-    }
-}
+        var indices = _lapsOldestFirst ? Enumerable.Range(0, _laps.Count) : Enumerable.Range(0, _laps.Count).Reverse();
+        foreach (var i in indices)
+        {
+            var previous = i == 0 ? TimeSpan.Zero : _laps[i - 1];
+            var split = _laps[i] - previous;
+            var row = new Grid { ColumnDefinitions = { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) }, Padding = new Thickness(10, 7) };
+            row.Add(new Label { Text = $"LAP {i + 1}", TextColor = Color.FromArgb("#91A8C0"), FontSize = 11, VerticalOptions = LayoutOptions.Center }, 0);
+            row.Add(new Label { Text = $"Split {split:mm\\:ss\\.ff}  ·  Total {_laps[i]:hh\\:mm\\:ss\\.ff}", TextColor = Colors.White, FontSize = 12, VerticalOptions = LayoutOptions.Center }, 1);
+            LapList.Children.Add(new Border { Stroke = Color.FromArgb("#2B4359"), StrokeShape = new RoundRectangle(12), Padding = 2, Content = row });
+        }
+        if (_laps.Count == 0) LapList.Children.Add(new Label { Text = "Your lap times will appear here.", TextColor = Color.FromArgb("#829AAF"), FontSize = 12 });
+    }}
