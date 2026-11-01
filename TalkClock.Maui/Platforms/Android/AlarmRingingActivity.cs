@@ -119,16 +119,18 @@ public sealed class AlarmRingingActivity : Activity
 
         var snoozeMinutes = Preferences.Get("alarm_snooze_minutes", 5);
         var snooze = ActionButton($"Snooze  ·  {snoozeMinutes} min", "#DCEEFF", "#19364E");
-        snooze.Click += (_, _) => SnoozeAlarm();
+        snooze.ContentDescription = $"Snooze alarm for {snoozeMinutes} minutes";
+        snooze.Click += (_, _) => { TouchFeedback(snooze); SnoozeAlarm(); };
         content.AddView(snooze, new LinearLayout.LayoutParams(-1, Dp(58)));
         content.AddView(Spacer(12), MatchWrap());
         var dismiss = ActionButton("Dismiss alarm", "#F0F6FC", "#345B78");
-        dismiss.Click += (_, _) => DismissAlarm();
+        dismiss.ContentDescription = "Dismiss alarm";
+        dismiss.Click += (_, _) => { TouchFeedback(dismiss); DismissAlarm(); };
         content.AddView(dismiss, new LinearLayout.LayoutParams(-1, Dp(58)));
 
         root.AddView(content);
         SetContentView(root);
-        StartPulse(outer, middle, inner);
+        if (!Preferences.Get("accessibility_reduce_motion", false)) StartPulse(outer, middle, inner);
     }
 
     void StartPulse(params View[] rings)
@@ -149,7 +151,12 @@ public sealed class AlarmRingingActivity : Activity
 
     void UpdateClock()
     {
-        if (_clock is not null) _clock.Text = DateTime.Now.ToString(Preferences.Get("use_24_hour", true) ? "HH:mm" : "h:mm tt");
+        if (_clock is not null)
+        {
+            var use24 = Preferences.Get("use_24_hour", true);
+            var seconds = Preferences.Get("show_seconds", true);
+            _clock.Text = DateTime.Now.ToString((use24 ? "HH:mm" : "h:mm") + (seconds ? ":ss" : "") + (use24 ? "" : " tt"));
+        }
         if (_date is not null) _date.Text = DateTime.Now.ToString("dddd, d MMMM");
     }
     void ClockTick()
@@ -157,6 +164,12 @@ public sealed class AlarmRingingActivity : Activity
         if (_finished || IsFinishing) return;
         UpdateClock();
         _handler?.PostDelayed(ClockTick, 1000);
+    }
+
+    void TouchFeedback(View view)
+    {
+        if (Preferences.Get("accessibility_haptics", true))
+            view.PerformHapticFeedback(FeedbackConstants.VirtualKey);
     }
 
     void SnoozeAlarm()
@@ -185,17 +198,18 @@ public sealed class AlarmRingingActivity : Activity
         var view = new TextView(this)
         {
             Text = value,
-            TextSize = size,
+            TextSize = size * (Preferences.Get("accessibility_text_scale", 0) switch { 1 => 1.18f, 2 => 1.35f, _ => 1f }),
             Typeface = Typeface.Create(bold ? "sans-serif-medium" : "sans-serif-light", TypefaceStyle.Normal)
         };
-        view.SetTextColor(Color.ParseColor(color));
+        view.SetTextColor(Color.ParseColor(Preferences.Get("accessibility_high_contrast", false) ? "#FFFFFF" : color));
         return view;
     }
 
     Button ActionButton(string title, string textColor, string fill)
     {
-        var button = new Button(this) { Text = title, TextSize = 16 };
-        button.SetTextColor(Color.ParseColor(textColor));
+        var button = new Button(this) { Text = title, TextSize = 16 * (Preferences.Get("accessibility_text_scale", 0) switch { 1 => 1.18f, 2 => 1.35f, _ => 1f }) };
+        button.ContentDescription = title;
+        button.SetTextColor(Color.ParseColor(Preferences.Get("accessibility_high_contrast", false) ? "#07101D" : textColor));
         var background = new GradientDrawable();
         background.SetShape(ShapeType.Rectangle);
         background.SetCornerRadius(Dp(20));
