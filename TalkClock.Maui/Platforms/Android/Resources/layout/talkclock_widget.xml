@@ -37,7 +37,7 @@
             android:textColor="#FFFFFF"
             android:textSize="34sp"
             android:textStyle="bold"
-            android:timeZone=""/>
+            />
 
         <TextView
             android:id="@+id/widget_date"
