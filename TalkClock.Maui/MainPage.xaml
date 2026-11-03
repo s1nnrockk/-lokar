@@ -212,5 +212,45 @@
         <Button Grid.Column="4" AutomationProperties.Name="Open settings" Text="⚙\nMore" Clicked="OnSettingsTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
       </Grid>
     </Border>
+    <Button x:Name="AssistantFab" Grid.Row="0" Text="✦  AI" Clicked="OnAssistantToggleClicked"
+            BackgroundColor="#A7DFFF" TextColor="#07111F" FontAttributes="Bold" FontSize="14"
+            CornerRadius="24" Padding="18,12" HeightRequest="48"
+            HorizontalOptions="End" VerticalOptions="End" Margin="0,0,18,14"
+            AutomationProperties.Name="Open Clokar AI assistant"/>
+    <Border x:Name="AssistantPanel" Grid.RowSpan="2" IsVisible="False"
+            WidthRequest="340" HeightRequest="470" Margin="10,0,10,84"
+            HorizontalOptions="End" VerticalOptions="End"
+            Background="#F0111F2D" Stroke="#54758F" StrokeThickness="1.2"
+            StrokeShape="RoundRectangle 24" Padding="14">
+      <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+        <Grid ColumnDefinitions="*,Auto">
+          <VerticalStackLayout Spacing="2">
+            <Label Text="CLOKAR AI" TextColor="#A7DFFF" FontSize="10" CharacterSpacing="2" FontAttributes="Bold"/>
+            <Label Text="Ask about time or set a timer" TextColor="#F2F7FC" FontSize="16" FontAttributes="Bold"/>
+          </VerticalStackLayout>
+          <Button Grid.Column="1" Text="×" Clicked="OnAssistantToggleClicked" BackgroundColor="#263B50"
+                  TextColor="White" CornerRadius="16" WidthRequest="36" HeightRequest="36" Padding="0"
+                  AutomationProperties.Name="Close Clokar AI assistant"/>
+        </Grid>
+        <ScrollView Grid.Row="1" x:Name="AssistantScroll" VerticalOptions="Fill">
+          <VerticalStackLayout x:Name="AssistantMessages" Spacing="8">
+            <Border Background="#1B3044" Stroke="#38536B" StrokeShape="RoundRectangle 14" Padding="10">
+              <Label Text="Привет! Могу сказать текущее время, поставить таймер или ответить на вопрос. Например: «поставь таймер на 5 минут»."
+                     TextColor="#EAF6FF" FontSize="13"/>
+            </Border>
+          </VerticalStackLayout>
+        </ScrollView>
+        <VerticalStackLayout Grid.Row="2" Spacing="6">
+          <Label Text="Сообщение отправляется в LLM7.io (облачный ИИ)." TextColor="#829AAF" FontSize="9"/>
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+            <Entry x:Name="AssistantInput" Placeholder="Напиши запрос…" TextColor="White" PlaceholderColor="#829AAF"
+                   BackgroundColor="#172A3C" ReturnType="Send" Completed="OnAssistantSendClicked"/>
+            <Button x:Name="AssistantSendButton" Grid.Column="1" Text="↑" Clicked="OnAssistantSendClicked"
+                    BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="14" WidthRequest="44" FontSize="20"
+                    AutomationProperties.Name="Send message to Clokar AI"/>
+          </Grid>
+        </VerticalStackLayout>
+      </Grid>
+    </Border>
   </Grid>
 </ContentPage>
