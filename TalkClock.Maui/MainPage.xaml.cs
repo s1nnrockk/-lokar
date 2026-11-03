@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 namespace TalkClock;
 public partial class MainPage : ContentPage
 {
@@ -17,6 +18,8 @@ public partial class MainPage : ContentPage
     TimeSpan _timerRemaining;
     bool _timerRunning;
     int _lastClockSecond = -1;
+    readonly ClokarAssistantClient _assistantClient = new();
+    bool _assistantBusy;
 
     public MainPage()
     {
@@ -313,6 +316,189 @@ public partial class MainPage : ContentPage
     {
         if (!Preferences.Get("accessibility_haptics", true)) return;
         try { HapticFeedback.Default.Perform(HapticFeedbackType.Click); } catch { }
+    }
+
+    void OnAssistantToggleClicked(object sender, EventArgs e)
+    {
+        AssistantPanel.IsVisible = !AssistantPanel.IsVisible;
+        AssistantFab.IsVisible = !AssistantPanel.IsVisible;
+        if (AssistantPanel.IsVisible)
+            MainThread.BeginInvokeOnMainThread(() => AssistantInput.Focus());
+    }
+
+    async void OnAssistantSendClicked(object sender, EventArgs e)
+    {
+        var prompt = AssistantInput.Text?.Trim() ?? "";
+        if (prompt.Length == 0 || _assistantBusy) return;
+
+        AssistantInput.Text = "";
+        AddAssistantMessage(prompt, true);
+        _assistantBusy = true;
+        AssistantSendButton.IsEnabled = false;
+        var waiting = AddAssistantMessage("Думаю…", false);
+        try
+        {
+            if (TryHandleLocalRequest(prompt, out var localReply))
+            {
+                waiting.Text = localReply;
+                return;
+            }
+
+            var raw = await _assistantClient.AskAsync(prompt);
+            if (TryReadAssistantAction(raw, out var action, out var message, out var duration))
+            {
+                switch (action)
+                {
+                    case "get_time":
+                        waiting.Text = $"Сейчас {DateTime.Now.ToString(ClockFormat())}.";
+                        break;
+                    case "set_timer":
+                        if (duration <= 0 || duration > 59999)
+                            waiting.Text = "Укажи длительность таймера до 999 минут 59 секунд.";
+                        else
+                        {
+                            StartAssistantTimer(TimeSpan.FromSeconds(duration));
+                            waiting.Text = string.IsNullOrWhiteSpace(message)
+                                ? $"Таймер запущен на {FormatDuration(TimeSpan.FromSeconds(duration))}."
+                                : $"{message} Таймер запущен на {FormatDuration(TimeSpan.FromSeconds(duration))}.";
+                        }
+                        break;
+                    default:
+                        waiting.Text = message;
+                        break;
+                }
+            }
+            else waiting.Text = raw;
+        }
+        catch (Exception ex)
+        {
+            waiting.Text = $"Не удалось связаться с LLM7.io. Проверь подключение и попробуй ещё раз.\n{ex.Message}";
+        }
+        finally
+        {
+            _assistantBusy = false;
+            AssistantSendButton.IsEnabled = true;
+            await AssistantScroll.ScrollToAsync(0, AssistantMessages.Height, true);
+        }
+    }
+
+    Label AddAssistantMessage(string text, bool isUser)
+    {
+        var bubble = new Border
+        {
+            Background = Color.FromArgb(isUser ? "#A7DFFF" : "#1B3044"),
+            Stroke = Color.FromArgb(isUser ? "#A7DFFF" : "#38536B"),
+            StrokeShape = new RoundRectangle(14),
+            Padding = new Thickness(10, 8),
+            HorizontalOptions = isUser ? LayoutOptions.End : LayoutOptions.Start,
+            MaximumWidthRequest = 285,
+            Content = new Label
+            {
+                Text = text,
+                TextColor = Color.FromArgb(isUser ? "#07111F" : "#EAF6FF"),
+                FontSize = 13
+            }
+        };
+        var label = (Label)bubble.Content;
+        AssistantMessages.Children.Add(bubble);
+        return label;
+    }
+
+    bool TryHandleLocalRequest(string prompt, out string reply)
+    {
+        var text = prompt.ToLowerInvariant();
+        if (text.Contains("таймер") && TryParseDuration(text, out var duration))
+        {
+            if (duration <= TimeSpan.Zero || duration.TotalSeconds > 59999)
+            {
+                reply = "Длительность таймера должна быть от 1 секунды до 999 минут 59 секунд.";
+                return true;
+            }
+            StartAssistantTimer(duration);
+            reply = $"Таймер запущен на {FormatDuration(duration)}.";
+            return true;
+        }
+
+        if (text.Contains("который час") || text.Contains("сколько сейчас времени") ||
+            text.Contains("текущее время") || text == "время" || text.Contains("сколько времени"))
+        {
+            reply = $"Сейчас {DateTime.Now.ToString(ClockFormat())}.";
+            return true;
+        }
+
+        reply = "";
+        return false;
+    }
+
+    static bool TryParseDuration(string text, out TimeSpan duration)
+    {
+        var match = Regex.Match(text,
+            @"(?<n>\\d+)\\s*(?<u>час(?:а|ов)?|ч|мин(?:ут(?:а|ы)?)?|мину(?:та|ты|т)?|сек(?:унд(?:а|ы)?)?|с)\\b",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (match.Success && int.TryParse(match.Groups["n"].Value, out var value))
+        {
+            var unit = match.Groups["u"].Value;
+            duration = unit.StartsWith("ч", StringComparison.OrdinalIgnoreCase) || unit.StartsWith("час", StringComparison.OrdinalIgnoreCase)
+                ? TimeSpan.FromHours(value)
+                : unit.StartsWith("м", StringComparison.OrdinalIgnoreCase) || unit.StartsWith("мин", StringComparison.OrdinalIgnoreCase)
+                    ? TimeSpan.FromMinutes(value)
+                    : TimeSpan.FromSeconds(value);
+            return true;
+        }
+
+        if (text.Contains("полчаса")) { duration = TimeSpan.FromMinutes(30); return true; }
+        if (text.Contains("час") && text.Contains("таймер")) { duration = TimeSpan.FromHours(1); return true; }
+        duration = TimeSpan.Zero;
+        return false;
+    }
+
+    static bool TryReadAssistantAction(string raw, out string action, out string message, out int durationSeconds)
+    {
+        action = "answer";
+        message = raw.Trim();
+        durationSeconds = 0;
+        var start = raw.IndexOf('{');
+        var end = raw.LastIndexOf('}');
+        if (start < 0 || end <= start) return false;
+        try
+        {
+            using var json = JsonDocument.Parse(raw[start..(end + 1)]);
+            var root = json.RootElement;
+            action = root.TryGetProperty("action", out var a) ? a.GetString() ?? "answer" : "answer";
+            message = root.TryGetProperty("message", out var m) ? m.GetString() ?? "" : "";
+            if (root.TryGetProperty("durationSeconds", out var d) && d.TryGetInt32(out var seconds))
+                durationSeconds = seconds;
+            return true;
+        }
+        catch
+        {
+            action = "answer";
+            message = raw.Trim();
+            return false;
+        }
+    }
+
+    void StartAssistantTimer(TimeSpan duration)
+    {
+        _timerRemaining = duration;
+        _timerEnd = DateTime.Now.Add(duration);
+        _timerRunning = true;
+        TimerMinutes.Text = ((int)duration.TotalMinutes).ToString();
+        TimerSeconds.Text = duration.Seconds.ToString();
+        TimerStatus.Text = duration.ToString(@"hh\\:mm\\:ss");
+        TimerButton.Text = "Pause";
+        Preferences.Set("timer_end_utc", _timerEnd.ToUniversalTime().Ticks.ToString());
+        ShowTab(2);
+#if ANDROID
+        AndroidAlarm.ScheduleTimer(new DateTimeOffset(_timerEnd).ToUnixTimeMilliseconds());
+#endif
+    }
+
+    static string FormatDuration(TimeSpan duration)
+    {
+        if (duration.TotalHours >= 1) return $"{(int)duration.TotalHours} ч {duration.Minutes} мин";
+        if (duration.TotalMinutes >= 1) return $"{(int)duration.TotalMinutes} мин {duration.Seconds} сек";
+        return $"{(int)duration.TotalSeconds} сек";
     }
 
     void OnKeepAwakeToggled(object sender, ToggledEventArgs e)
