@@ -18,6 +18,12 @@ A separate C#/.NET MAUI Android implementation. The original Kotlin app remains 
 - Screen-reader names for bottom navigation, alarm controls, and world-clock removal actions
 - Device setting to keep the screen awake
 
+## Clokar AI
+
+The floating AI panel uses the hosted LLM7.io OpenAI-compatible endpoint with model `gpt-oss:20b`. It is not local and does not require a key in the app. Prompts are sent to the provider; avoid entering personal or sensitive information. The provider's free quota and availability can change.
+
+The assistant can read the current device time locally and start the existing timer from natural-language requests. General questions are sent to the hosted model.
+
 ## Add the widget
 
 Install the APK, then long-press an empty area of the Android home screen, open **Widgets**, find **Clokar**, and drag the clock widget onto the home screen. Resize it with the launcher handles. Tap the widget to open Clokar.
