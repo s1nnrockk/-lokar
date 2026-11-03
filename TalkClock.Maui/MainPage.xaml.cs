@@ -433,7 +433,7 @@ public partial class MainPage : ContentPage
     static bool TryParseDuration(string text, out TimeSpan duration)
     {
         var match = Regex.Match(text,
-            @"(?<n>\\d+)\\s*(?<u>час(?:а|ов)?|ч|мин(?:ут(?:а|ы)?)?|мину(?:та|ты|т)?|сек(?:унд(?:а|ы)?)?|с)\\b",
+            @"(?<n>\d+)\s*(?<u>час(?:а|ов)?|ч|мин(?:ут(?:а|ы)?)?|мину(?:та|ты|т)?|сек(?:унд(?:а|ы)?)?|с)\b",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         if (match.Success && int.TryParse(match.Groups["n"].Value, out var value))
         {
@@ -485,7 +485,7 @@ public partial class MainPage : ContentPage
         _timerRunning = true;
         TimerMinutes.Text = ((int)duration.TotalMinutes).ToString();
         TimerSeconds.Text = duration.Seconds.ToString();
-        TimerStatus.Text = duration.ToString(@"hh\\:mm\\:ss");
+        TimerStatus.Text = duration.ToString(@"hh\:mm\:ss");
         TimerButton.Text = "Pause";
         Preferences.Set("timer_end_utc", _timerEnd.ToUniversalTime().Ticks.ToString());
         ShowTab(2);
