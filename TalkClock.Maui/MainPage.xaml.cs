@@ -344,6 +344,12 @@ public partial class MainPage : ContentPage
                 return;
             }
 
+            if (!IsClockRelatedRequest(prompt))
+            {
+                waiting.Text = "Я помогаю только с часами и функциями Clokar: временем, часовыми поясами, будильниками, таймерами, секундомером и настройками.";
+                return;
+            }
+
             var raw = await _assistantClient.AskAsync(prompt);
             if (TryReadAssistantAction(raw, out var action, out var message, out var duration))
             {
@@ -402,6 +408,20 @@ public partial class MainPage : ContentPage
         var label = (Label)bubble.Content;
         AssistantMessages.Children.Add(bubble);
         return label;
+    }
+
+    static bool IsClockRelatedRequest(string prompt)
+    {
+        var text = prompt.ToLowerInvariant();
+        string[] topics =
+        {
+            "врем", "час", "пояс", "город", "будиль", "таймер", "секундомер",
+            "отсроч", "отлож", "сигнал", "вибрац", "громк", "циферблат",
+            "формат", "настройк", "миров", "alarm", "timer", "clock", "time",
+            "timezone", "stopwatch", "snooze", "watch", "clokar", "12/24",
+            "12-час", "24-час", "дата", "минут", "секунд"
+        };
+        return topics.Any(text.Contains);
     }
 
     bool TryHandleLocalRequest(string prompt, out string reply)
