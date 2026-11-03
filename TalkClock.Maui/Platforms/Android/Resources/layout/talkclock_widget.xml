@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/talkclock_widget_glass"
+    android:padding="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/widget_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CLOKAR • TIME, IN FLOW"
+            android:textColor="#B8DDF5"
+            android:textSize="9sp"
+            android:letterSpacing="0.16"
+            android:textStyle="bold" />
+
+        <TextClock
+            android:id="@+id/widget_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="h:mm:ss a"
+            android:format24Hour="HH:mm:ss"
+            android:fontFamily="sans"
+            android:includeFontPadding="false"
+            android:textColor="#FFFFFF"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/widget_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monday, January 1"
+            android:textColor="#C4D9E9"
+            android:textSize="11sp" />
+    </LinearLayout>
+</FrameLayout>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TalkClock.MainPage" BackgroundColor="#070D18">
+  <Grid RowDefinitions="*,Auto">
+    <ScrollView Grid.Row="0">
+      <VerticalStackLayout Padding="20,22,20,26" Spacing="18">
+        <Grid ColumnDefinitions="*,Auto" Margin="2,0,2,4">
+          <VerticalStackLayout Spacing="2">
+            <Label Text="C L O K A R" TextColor="#A8DFFF" FontSize="11" CharacterSpacing="3" FontAttributes="Bold"/>
+            <Label Text="Time, in your flow." TextColor="#F4F8FC" FontSize="27" FontAttributes="Bold"/>
+          </VerticalStackLayout>
+          <Border Grid.Column="1" Background="#14283A" Stroke="#38536B" StrokeThickness="1" StrokeShape="RoundRectangle 18" Padding="12,9" VerticalOptions="Center">
+            <HorizontalStackLayout Spacing="6">
+              <Label Text="●" TextColor="#79DDB1" FontSize="9" VerticalOptions="Center"/>
+              <Label Text="OFFLINE" TextColor="#B5D0E4" FontSize="9" CharacterSpacing="1" FontAttributes="Bold" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+          </Border>
+        </Grid>
+        <Border Background="#12283B" Stroke="#42647E" StrokeThickness="1" StrokeShape="RoundRectangle 30" Padding="22">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+              <GradientStop Color="#24445E" Offset="0"/>
+              <GradientStop Color="#14283D" Offset="0.55"/>
+              <GradientStop Color="#0D1929" Offset="1"/>
+            </LinearGradientBrush>
+          </Border.Background>
+          <VerticalStackLayout Spacing="7">
+            <Grid ColumnDefinitions="*,Auto">
+              <Label Text="YOUR LOCAL TIME" TextColor="#A9C4D8" FontSize="10" CharacterSpacing="1.8" FontAttributes="Bold"/>
+              <Label Text="◌  LIVE" Grid.Column="1" TextColor="#8DDCBE" FontSize="9" CharacterSpacing="1" FontAttributes="Bold"/>
+            </Grid>
+            <Label x:Name="ClockLabel" Text="00:00:00" TextColor="#F7FBFF" FontSize="48" FontAttributes="Bold" HorizontalOptions="Center" CharacterSpacing="-1"/>
+            <Label x:Name="DateLabel" Text="Monday, January 1" TextColor="#B5C9D9" FontSize="13" HorizontalOptions="Center"/>
+            <BoxView HeightRequest="1" BackgroundColor="#38536A" Margin="8,9"/>
+            <Label Text="Every second, beautifully on time." TextColor="#8EA9BF" FontSize="11" HorizontalOptions="Center"/>
+          </VerticalStackLayout>
+        </Border>
+
+        <Border x:Name="WorldClockSection" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 26" Padding="18">
+          <VerticalStackLayout Spacing="13">
+            <Grid ColumnDefinitions="*,Auto">
+              <VerticalStackLayout Spacing="2">
+                <Label Text="WORLD CLOCK" TextColor="#8FAFC7" FontSize="9" CharacterSpacing="2" FontAttributes="Bold"/>
+                <Label Text="Across the world" TextColor="#F2F7FC" FontSize="21" FontAttributes="Bold"/>
+              </VerticalStackLayout>
+              <Label Grid.Column="1" Text="🌐" FontSize="22" VerticalOptions="Center"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <Entry x:Name="WorldZoneEntry" Placeholder="e.g. Asia/Tokyo" Text="Europe/London" TextColor="White" PlaceholderColor="#829AAF" BackgroundColor="#172A3C"/>
+              <Button Grid.Column="1" Text="＋ Add" Clicked="OnAddWorldClockClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="14" FontAttributes="Bold"/>
+            </Grid>
+            <Label Text="Enter a time-zone ID such as Europe/Paris or America/New_York." TextColor="#829AAF" FontSize="11"/>
+            <VerticalStackLayout x:Name="WorldClockList" Spacing="8"/>
+          </VerticalStackLayout>
+        </Border>
+
+        <Border x:Name="AlarmSection" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 26" Padding="18">
+          <VerticalStackLayout Spacing="13">
+            <Grid ColumnDefinitions="*,Auto">
+              <VerticalStackLayout Spacing="2">
+                <Label Text="WAKE UP GENTLY" TextColor="#8FAFC7" FontSize="9" CharacterSpacing="2" FontAttributes="Bold"/>
+                <Label Text="Alarms" TextColor="#F2F7FC" FontSize="21" FontAttributes="Bold"/>
+              </VerticalStackLayout>
+              <Label Grid.Column="1" Text="◷" TextColor="#A7DFFF" FontSize="25" VerticalOptions="Center"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <TimePicker x:Name="AlarmTimePicker" Time="07:00:00" TextColor="White" BackgroundColor="#172A3C"/>
+              <Entry x:Name="AlarmLabelEntry" Grid.Column="1" Placeholder="Alarm name" Text="Morning" TextColor="White" PlaceholderColor="#829AAF" BackgroundColor="#172A3C"/>
+            </Grid>
+            <Border Background="#142438" Stroke="#29445C" StrokeShape="RoundRectangle 16" Padding="12">
+              <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*,Auto"><Label Text="Vibration" TextColor="#DCEAF5" VerticalOptions="Center"/><Switch x:Name="AlarmVibrateSwitch" Grid.Column="1" IsToggled="True" OnColor="#A7DFFF"/></Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Grid ColumnDefinitions="*,Auto"><Label Text="Gradually increase volume" TextColor="#DCEAF5" VerticalOptions="Center"/><Switch x:Name="AlarmGradualSwitch" Grid.Column="1" IsToggled="True" OnColor="#A7DFFF"/></Grid>
+              </VerticalStackLayout>
+            </Border>
+            <Label Text="REPEAT ON" TextColor="#8FAFC7" FontSize="9" CharacterSpacing="1.5" FontAttributes="Bold"/>
+            <Grid ColumnDefinitions="*,*,*,*,*,*,*" ColumnSpacing="3">
+              <VerticalStackLayout><CheckBox x:Name="Day0" Color="#9BDFFF"/><Label Text="Su" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="1"><CheckBox x:Name="Day1" Color="#9BDFFF"/><Label Text="Mo" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="2"><CheckBox x:Name="Day2" Color="#9BDFFF"/><Label Text="Tu" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="3"><CheckBox x:Name="Day3" Color="#9BDFFF"/><Label Text="We" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="4"><CheckBox x:Name="Day4" Color="#9BDFFF"/><Label Text="Th" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="5"><CheckBox x:Name="Day5" Color="#9BDFFF"/><Label Text="Fr" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+              <VerticalStackLayout Grid.Column="6"><CheckBox x:Name="Day6" Color="#9BDFFF"/><Label Text="Sa" TextColor="#829AAF" FontSize="10" HorizontalOptions="Center"/></VerticalStackLayout>
+            </Grid>
+            <Button x:Name="CreateAlarmButton" Text="＋  Create alarm" Clicked="OnSetAlarmClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16" FontAttributes="Bold" HeightRequest="50"/>
+            <Label x:Name="AlarmStatus" Text="No alarms scheduled" TextColor="#829AAF" FontSize="12"/>
+            <VerticalStackLayout x:Name="AlarmList" Spacing="8"/>
+          </VerticalStackLayout>
+        </Border>
+
+        <Border x:Name="TimerSection" IsVisible="False" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 26" Padding="18">
+          <VerticalStackLayout Spacing="14">
+            <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="FOCUS MODE" TextColor="#8FAFC7" FontSize="9" CharacterSpacing="2" FontAttributes="Bold"/><Label Text="Timer" TextColor="#F2F7FC" FontSize="21" FontAttributes="Bold"/></VerticalStackLayout><Label Grid.Column="1" Text="⌛" TextColor="#A7DFFF" FontSize="24" VerticalOptions="Center"/></Grid>
+            <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="4">
+              <Button Text="1m" Clicked="OnTimerPresetClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="12" FontSize="11"/>
+              <Button Grid.Column="1" Text="5m" Clicked="OnTimerPresetClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="12" FontSize="11"/>
+              <Button Grid.Column="2" Text="10m" Clicked="OnTimerPresetClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="12" FontSize="11"/>
+              <Button Grid.Column="3" Text="25m" Clicked="OnTimerPresetClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="12" FontSize="11"/>
+              <Button Grid.Column="4" Text="60m" Clicked="OnTimerPresetClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="12" FontSize="11"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Entry x:Name="TimerMinutes" Placeholder="Minutes" Keyboard="Numeric" Text="5" TextColor="White" PlaceholderColor="#829AAF" BackgroundColor="#172A3C"/>
+              <Entry x:Name="TimerSeconds" Grid.Column="1" Placeholder="Seconds" Keyboard="Numeric" Text="0" TextColor="White" PlaceholderColor="#829AAF" BackgroundColor="#172A3C"/>
+            </Grid>
+            <Label x:Name="TimerStatus" Text="00:05:00" TextColor="#EAF6FF" FontSize="38" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Button x:Name="TimerButton" Text="Start timer" Clicked="OnTimerClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16" FontAttributes="Bold" HeightRequest="50"/>
+          </VerticalStackLayout>
+        </Border>
+
+        <Border x:Name="StopwatchSection" IsVisible="False" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 26" Padding="18">
+          <VerticalStackLayout Spacing="14">
+            <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="MEASURE EVERY MOMENT" TextColor="#8FAFC7" FontSize="9" CharacterSpacing="2" FontAttributes="Bold"/><Label Text="Stopwatch" TextColor="#F2F7FC" FontSize="21" FontAttributes="Bold"/></VerticalStackLayout><Label Grid.Column="1" Text="◴" TextColor="#A7DFFF" FontSize="24" VerticalOptions="Center"/></Grid>
+            <Label x:Name="StopwatchLabel" Text="00:00:00.00" TextColor="#F7FBFF" FontSize="36" HorizontalOptions="Center"/>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Button x:Name="StopwatchButton" Text="Start" Clicked="OnStopwatchClicked" BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="16"/>
+              <Button Grid.Column="1" Text="Lap" Clicked="OnLapClicked" BackgroundColor="#263B50" TextColor="White" CornerRadius="16"/>
+            </Grid>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Button Text="Reset" Clicked="OnStopwatchResetClicked" BackgroundColor="#1A2B3D" TextColor="#BBD0E0" CornerRadius="16"/>
+              <Button x:Name="LapSortButton" Grid.Column="1" Text="Newest first ↓" Clicked="OnLapSortClicked" BackgroundColor="#263B50" TextColor="#BBD0E0" CornerRadius="16"/>
+            </Grid>
+            <VerticalStackLayout x:Name="LapList" Spacing="6"/>
+          </VerticalStackLayout>
+        </Border>
+
+        <Border x:Name="SettingsSection" IsVisible="False" Background="#101D2B" Stroke="#2B4359" StrokeThickness="1" StrokeShape="RoundRectangle 26" Padding="18">
+          <VerticalStackLayout Spacing="15">
+            <VerticalStackLayout Spacing="2">
+              <Label Text="MAKE IT YOURS" TextColor="#8FAFC7" FontSize="9" CharacterSpacing="2" FontAttributes="Bold"/>
+              <Label Text="Settings" TextColor="#F2F7FC" FontSize="24" FontAttributes="Bold"/>
+              <Label Text="Tune the look, feel and behavior of Clokar." TextColor="#829AAF" FontSize="12"/>
+            </VerticalStackLayout>
+
+            <Label Text="APPEARANCE" TextColor="#8FAFC7" FontSize="10" CharacterSpacing="1.5" FontAttributes="Bold"/>
+            <Border Background="#142438" Stroke="#29445C" StrokeShape="RoundRectangle 16" Padding="12">
+              <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="Liquid Glass" TextColor="#E5F0F8"/><Label Text="Translucent layered panels" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="GlassSwitch" Grid.Column="1" Toggled="OnGlassToggled" OnColor="#A7DFFF"/></Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Label Text="Color theme" TextColor="#E5F0F8" FontSize="12"/>
+                <Picker x:Name="ThemePicker" Title="Choose background" TextColor="White" TitleColor="#829AAF" SelectedIndexChanged="OnThemeChanged">
+                  <Picker.Items><x:String>Deep Ocean</x:String><x:String>Midnight</x:String><x:String>Graphite</x:String></Picker.Items>
+                </Picker>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Label Text="Accent color" TextColor="#E5F0F8" FontSize="12"/>
+                <Picker x:Name="AccentPicker" Title="Choose accent" TextColor="White" TitleColor="#829AAF" SelectedIndexChanged="OnAccentChanged">
+                  <Picker.Items><x:String>Ice Blue</x:String><x:String>Violet</x:String><x:String>Mint</x:String><x:String>Rose</x:String><x:String>Amber</x:String><x:String>Arctic</x:String></Picker.Items>
+                </Picker>
+              </VerticalStackLayout>
+            </Border>
+
+            <Label Text="CLOCK" TextColor="#8FAFC7" FontSize="10" CharacterSpacing="1.5" FontAttributes="Bold"/>
+            <Border Background="#142438" Stroke="#29445C" StrokeShape="RoundRectangle 16" Padding="12">
+              <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="24-hour clock" TextColor="#E5F0F8"/><Label Text="Use 00:00 instead of 12:00 AM" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="HourFormatSwitch" Grid.Column="1" Toggled="OnHourFormatToggled" OnColor="#A7DFFF"/></Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="Show seconds" TextColor="#E5F0F8"/><Label Text="Display seconds on all clocks" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="SecondsSwitch" Grid.Column="1" Toggled="OnSecondsToggled" OnColor="#A7DFFF"/></Grid>
+              </VerticalStackLayout>
+            </Border>
+
+            <Label Text="ALARMS" TextColor="#8FAFC7" FontSize="10" CharacterSpacing="1.5" FontAttributes="Bold"/>
+            <Border Background="#142438" Stroke="#29445C" StrokeShape="RoundRectangle 16" Padding="12">
+              <VerticalStackLayout Spacing="9">
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="Default vibration" TextColor="#E5F0F8"/><Label Text="For newly created alarms" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="DefaultVibrateSwitch" Grid.Column="1" OnColor="#A7DFFF" Toggled="OnDefaultVibrateToggled"/></Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="Gradual volume" TextColor="#E5F0F8"/><Label Text="Start quietly, then get louder" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="DefaultGradualSwitch" Grid.Column="1" OnColor="#A7DFFF" Toggled="OnDefaultGradualToggled"/></Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Label Text="Snooze duration" TextColor="#E5F0F8" FontSize="12"/>
+                <Picker x:Name="SnoozePicker" Title="Choose snooze" TextColor="White" TitleColor="#829AAF" SelectedIndexChanged="OnSnoozeChanged">
+                  <Picker.Items><x:String>5 minutes</x:String><x:String>10 minutes</x:String><x:String>15 minutes</x:String><x:String>20 minutes</x:String></Picker.Items>
+                </Picker>
+              </VerticalStackLayout>
+            </Border>
+
+            <Label Text="ACCESSIBILITY" TextColor="#8FAFC7" FontSize="10" CharacterSpacing="1.5" FontAttributes="Bold"/>
+            <Border Background="#142438" Stroke="#29445C" StrokeShape="RoundRectangle 16" Padding="12">
+              <VerticalStackLayout Spacing="11">
+                <VerticalStackLayout Spacing="3">
+                  <Label Text="Text size" TextColor="#E5F0F8" FontSize="13"/>
+                  <Label Text="Enlarge important clock and control text" TextColor="#829AAF" FontSize="10"/>
+                  <Picker x:Name="TextScalePicker" Title="Choose text size" TextColor="White" TitleColor="#829AAF" SelectedIndexChanged="OnTextScaleChanged">
+                    <Picker.Items><x:String>Default</x:String><x:String>Large</x:String><x:String>Extra large</x:String></Picker.Items>
+                  </Picker>
+                </VerticalStackLayout>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="High contrast" TextColor="#E5F0F8"/><Label Text="Brighter text and clearer panel borders" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="HighContrastSwitch" Grid.Column="1" Toggled="OnHighContrastToggled" OnColor="#A7DFFF"/></Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="Reduce motion" TextColor="#E5F0F8"/><Label Text="Disable pulsing alarm-screen animation" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="ReduceMotionSwitch" Grid.Column="1" Toggled="OnReduceMotionToggled" OnColor="#A7DFFF"/></Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#2A4055"/>
+                <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="Touch feedback" TextColor="#E5F0F8"/><Label Text="Short vibration on important actions" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="HapticsSwitch" Grid.Column="1" Toggled="OnHapticsToggled" OnColor="#A7DFFF"/></Grid>
+              </VerticalStackLayout>
+            </Border>
+
+            <Label Text="DEVICE" TextColor="#8FAFC7" FontSize="10" CharacterSpacing="1.5" FontAttributes="Bold"/>
+            <Border Background="#142438" Stroke="#29445C" StrokeShape="RoundRectangle 16" Padding="12">
+              <Grid ColumnDefinitions="*,Auto"><VerticalStackLayout Spacing="2"><Label Text="Keep screen awake" TextColor="#E5F0F8"/><Label Text="Prevent display from sleeping in Clokar" TextColor="#829AAF" FontSize="10"/></VerticalStackLayout><Switch x:Name="KeepAwakeSwitch" Grid.Column="1" Toggled="OnKeepAwakeToggled" OnColor="#A7DFFF"/></Grid>
+            </Border>
+            <Label Text="Settings are saved automatically on this device." TextColor="#829AAF" FontSize="11" HorizontalOptions="Center"/>
+            <Label Text="CLOKAR  •  PRIVATE BY DESIGN  •  NO ADS" TextColor="#526A7E" FontSize="9" CharacterSpacing="1" HorizontalOptions="Center"/>
+          </VerticalStackLayout>
+        </Border>
+      </VerticalStackLayout>
+    </ScrollView>
+    <Border Grid.Row="1" Background="#0D1927" Stroke="#29445C" StrokeThickness="1" StrokeShape="RoundRectangle 24" Margin="14,0,14,12" Padding="5">
+      <Grid x:Name="BottomNav" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="2">
+        <Button AutomationProperties.Name="Open clock and world clocks" Text="◷\nClock" Clicked="OnClockTabClicked" BackgroundColor="#1B3044" TextColor="#A7DFFF" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="1" AutomationProperties.Name="Open alarms" Text="◉\nAlarm" Clicked="OnAlarmTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="2" AutomationProperties.Name="Open timer" Text="⌛\nTimer" Clicked="OnTimerTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="3" AutomationProperties.Name="Open stopwatch" Text="◴\nWatch" Clicked="OnStopwatchTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+        <Button Grid.Column="4" AutomationProperties.Name="Open settings" Text="⚙\nMore" Clicked="OnSettingsTabClicked" BackgroundColor="Transparent" TextColor="#91A8BC" CornerRadius="17" FontSize="10" Padding="2,8"/>
+      </Grid>
+    </Border>
+    <Button x:Name="AssistantFab" Grid.Row="0" Text="✦  AI" Clicked="OnAssistantToggleClicked"
+            BackgroundColor="#A7DFFF" TextColor="#07111F" FontAttributes="Bold" FontSize="14"
+            CornerRadius="24" Padding="18,12" HeightRequest="48"
+            HorizontalOptions="End" VerticalOptions="End" Margin="0,0,18,14"
+            AutomationProperties.Name="Open Clokar AI assistant"/>
+    <Border x:Name="AssistantPanel" Grid.RowSpan="2" IsVisible="False"
+            WidthRequest="320" HeightRequest="470" Margin="10,0,10,84"
+            HorizontalOptions="End" VerticalOptions="End"
+            Background="#F0111F2D" Stroke="#54758F" StrokeThickness="1.2"
+            StrokeShape="RoundRectangle 24" Padding="14">
+      <Grid RowDefinitions="Auto,*,Auto" RowSpacing="10">
+        <Grid ColumnDefinitions="*,Auto">
+          <VerticalStackLayout Spacing="2">
+            <Label Text="CLOKAR AI" TextColor="#A7DFFF" FontSize="10" CharacterSpacing="2" FontAttributes="Bold"/>
+            <Label Text="Ask about time or set a timer" TextColor="#F2F7FC" FontSize="16" FontAttributes="Bold"/>
+          </VerticalStackLayout>
+          <Button Grid.Column="1" Text="×" Clicked="OnAssistantToggleClicked" BackgroundColor="#263B50"
+                  TextColor="White" CornerRadius="16" WidthRequest="36" HeightRequest="36" Padding="0"
+                  AutomationProperties.Name="Close Clokar AI assistant"/>
+        </Grid>
+        <ScrollView Grid.Row="1" x:Name="AssistantScroll" VerticalOptions="Fill">
+          <VerticalStackLayout x:Name="AssistantMessages" Spacing="8">
+            <Border Background="#1B3044" Stroke="#38536B" StrokeShape="RoundRectangle 14" Padding="10">
+              <Label Text="Привет! Могу сказать текущее время, поставить таймер или ответить на вопрос. Например: «поставь таймер на 5 минут»."
+                     TextColor="#EAF6FF" FontSize="13"/>
+            </Border>
+          </VerticalStackLayout>
+        </ScrollView>
+        <VerticalStackLayout Grid.Row="2" Spacing="6">
+          <Label Text="Сообщение отправляется в LLM7.io (облачный ИИ)." TextColor="#829AAF" FontSize="9"/>
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+            <Entry x:Name="AssistantInput" Placeholder="Напиши запрос…" TextColor="White" PlaceholderColor="#829AAF"
+                   BackgroundColor="#172A3C" ReturnType="Send" Completed="OnAssistantSendClicked"/>
+            <Button x:Name="AssistantSendButton" Grid.Column="1" Text="↑" Clicked="OnAssistantSendClicked"
+                    BackgroundColor="#A7DFFF" TextColor="#07111F" CornerRadius="14" WidthRequest="44" FontSize="20"
+                    AutomationProperties.Name="Send message to Clokar AI"/>
+          </Grid>
+        </VerticalStackLayout>
+      </Grid>
+    </Border>
+  </Grid>
+</ContentPage>

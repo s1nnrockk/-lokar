@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import org.fossify.clock.R
 import org.fossify.clock.databinding.ActivitySettingsBinding
@@ -80,6 +81,7 @@ class SettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.settingsAppbar, NavigationIcon.Arrow)
 
         setupCustomizeColors()
+        setupLiquidGlass()
         setupUseEnglish()
         setupLanguage()
         setupHourFormat()
@@ -95,6 +97,7 @@ class SettingsActivity : SimpleActivity() {
         setupExportData()
         setupImportData()
         updateTextColors(binding.settingsHolder)
+        applyGlassToSettings()
 
         arrayOf(
             binding.settingsColorCustomizationSectionLabel,
@@ -104,6 +107,36 @@ class SettingsActivity : SimpleActivity() {
             binding.settingsMigratingLabel
         ).forEach {
             it.setTextColor(getProperPrimaryColor())
+        }
+    }
+
+    private fun setupLiquidGlass() {
+        binding.settingsLiquidGlass.isChecked = config.liquidGlass
+        binding.settingsLiquidGlassHolder.setOnClickListener {
+            binding.settingsLiquidGlass.toggle()
+            config.liquidGlass = binding.settingsLiquidGlass.isChecked
+            applyGlassToSettings()
+        }
+    }
+
+    private fun applyGlassToSettings() {
+        val glassEnabled = config.liquidGlass
+        if (glassEnabled) {
+            binding.settingsToolbar.setBackgroundResource(R.drawable.glass_toolbar_background)
+        } else {
+            binding.settingsToolbar.setBackgroundColor(getColor(R.color.color_primary))
+        }
+        val holder = binding.settingsHolder
+        for (index in 0 until holder.childCount) {
+            val child = holder.getChildAt(index)
+            if (child.id != ViewGroup.NO_ID) {
+                val name = runCatching { resources.getResourceEntryName(child.id) }.getOrDefault("")
+                if (name.contains("holder")) {
+                    child.setBackgroundResource(
+                        if (glassEnabled) R.drawable.glass_card_background else android.R.color.transparent
+                    )
+                }
+            }
         }
     }
 

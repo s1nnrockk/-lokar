@@ -1,0 +1,25 @@
+name: Build C# MAUI Android
+on:
+  push:
+    branches: [rewrite-csharp-maui]
+    paths: ['TalkClock.Maui/**', '.github/workflows/build-maui-android.yml']
+  pull_request:
+    paths: ['TalkClock.Maui/**', '.github/workflows/build-maui-android.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+      - name: Build APK
+        run: dotnet publish TalkClock.Maui/TalkClock.Maui.csproj -f net10.0-android -c Release -p:AndroidPackageFormat=apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TalkClock-Android
+          path: TalkClock.Maui/bin/Release/net10.0-android/publish/*.apk
