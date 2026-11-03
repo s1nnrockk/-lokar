@@ -218,7 +218,7 @@
             HorizontalOptions="End" VerticalOptions="End" Margin="0,0,18,14"
             AutomationProperties.Name="Open Clokar AI assistant"/>
     <Border x:Name="AssistantPanel" Grid.RowSpan="2" IsVisible="False"
-            WidthRequest="340" HeightRequest="470" Margin="10,0,10,84"
+            WidthRequest="320" HeightRequest="470" Margin="10,0,10,84"
             HorizontalOptions="End" VerticalOptions="End"
             Background="#F0111F2D" Stroke="#54758F" StrokeThickness="1.2"
             StrokeShape="RoundRectangle 24" Padding="14">
